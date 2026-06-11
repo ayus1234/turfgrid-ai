@@ -10,7 +10,7 @@ class Settings:
     GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
     MONGODB_URI: str = os.getenv("MONGODB_URI", "mongodb://localhost:27017/turfgrid")
     MONGODB_DB: str = os.getenv("MONGODB_DB", "turfgrid")
-    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
     HOST: str = os.getenv("HOST", "0.0.0.0")
     PORT: int = int(os.getenv("PORT", "8000"))
     CORS_ORIGINS: list = [

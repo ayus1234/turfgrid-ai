@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Agent%20Builder-4285F4?logo=google-cloud)](https://cloud.google.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Vector%20Search-47A248?logo=mongodb)](https://www.mongodb.com/)
-[![Gemini](https://img.shields.io/badge/Gemini-2.0%20Flash-8E75B2?logo=google)](https://ai.google.dev/)
+[![Gemini](https://img.shields.io/badge/Gemini-2.5%20Flash-8E75B2?logo=google)](https://ai.google.dev/)
 [![Groq](https://img.shields.io/badge/Groq-Llama%203-F55036?logo=groq)](https://groq.com/)
 
 ---
@@ -30,7 +30,7 @@ TurfGrid AI is an autonomous **multi-agent platform** that manages the complex l
 Instead of relying on rigid keyword lookups, TurfGrid AI utilizes **MongoDB `$vectorSearch`**. Venue data is dynamically embedded into 768-dimensional vectors using Google's `gemini-embedding-2`. This allows users to ask natural language questions like *"Find me stadiums near water with large capacities"* and receive mathematically accurate results from Atlas!
 
 ### 2. High-Availability LLM Architecture (Gemini ➡️ Groq Failover)
-Enterprise agents cannot afford downtime. TurfGrid AI implements a highly resilient architecture. It uses **Google Gemini 2.0 Flash** as its primary orchestrator. However, if the API quota is exhausted (`429 RESOURCE_EXHAUSTED`), the backend intercepts the failure and seamlessly fails over to **Groq's Llama-3.3-70b-versatile** model without dropping the user's session or breaking the UI. 
+Enterprise agents cannot afford downtime. TurfGrid AI implements a highly resilient architecture. It uses **Google Gemini 2.5 Flash** as its primary orchestrator. However, if the API quota is exhausted (`429 RESOURCE_EXHAUSTED`), the backend intercepts the failure and seamlessly fails over to **Groq's Llama-3.3-70b-versatile** model without dropping the user's session or breaking the UI. 
 
 ### 3. Real-Time API Agentic Tool Calling
 Our agents are empowered with tools to fetch live data from the outside world:
@@ -86,7 +86,7 @@ graph TD
     %% Orchestrator & High Availability
     subgraph High Availability LLM Router
         O[TurfGrid Orchestrator]
-        O -->|Primary: Success| G[Google Gemini 2.0 Flash]
+        O -->|Primary: Success| G[Google Gemini 2.5 Flash]
         O -->|Primary: 429 Quota Exhausted| F[Failover Trigger]
         F -->|Fallback| L[Groq Llama-3.3-70b-versatile]
     end
