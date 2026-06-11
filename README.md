@@ -4,6 +4,9 @@
 
 > Built for the [Google Cloud Rapid Agent Hackathon](https://devpost.com/) — MongoDB Track
 
+### 🚀 **[Play with the Live Demo Here!](https://turfgrid-ai-frontend-15593284604.europe-west1.run.app/)**
+*(Backend API: `https://turfgrid-ai-15593284604.europe-west1.run.app/`)*
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Agent%20Builder-4285F4?logo=google-cloud)](https://cloud.google.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Vector%20Search-47A248?logo=mongodb)](https://www.mongodb.com/)
