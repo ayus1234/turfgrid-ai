@@ -5,7 +5,7 @@
 > Built for the [Google Cloud Rapid Agent Hackathon](https://devpost.com/) — MongoDB Track
 
 ### 🚀 **[Play with the Live Demo Here!](https://turfgrid-ai-frontend-15593284604.europe-west1.run.app/)**
-*(Backend API: `https://turfgrid-ai-15593284604.europe-west1.run.app/`)*
+
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Agent%20Builder-4285F4?logo=google-cloud)](https://cloud.google.com/)
@@ -27,7 +27,7 @@ TurfGrid AI is an autonomous **multi-agent platform** that manages the complex l
 ## 🔥 Key Hackathon Features
 
 ### 1. MongoDB Vector Search & Semantic Memory
-Instead of relying on rigid keyword lookups, TurfGrid AI utilizes **MongoDB `$vectorSearch`**. Venue data is dynamically embedded into 768-dimensional vectors using Google's `models/embedding-001`. This allows users to ask natural language questions like *"Find me stadiums near water with large capacities"* and receive mathematically accurate results from Atlas!
+Instead of relying on rigid keyword lookups, TurfGrid AI utilizes **MongoDB `$vectorSearch`**. Venue data is dynamically embedded into 768-dimensional vectors using Google's `gemini-embedding-2`. This allows users to ask natural language questions like *"Find me stadiums near water with large capacities"* and receive mathematically accurate results from Atlas!
 
 ### 2. High-Availability LLM Architecture (Gemini ➡️ Groq Failover)
 Enterprise agents cannot afford downtime. TurfGrid AI implements a highly resilient architecture. It uses **Google Gemini 2.0 Flash** as its primary orchestrator. However, if the API quota is exhausted (`429 RESOURCE_EXHAUSTED`), the backend intercepts the failure and seamlessly fails over to **Groq's Llama-3.3-70b-versatile** model without dropping the user's session or breaking the UI. 
