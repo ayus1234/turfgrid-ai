@@ -40,7 +40,32 @@ A stunning Next.js frontend featuring an intelligent Chat interface, interactive
 
 ---
 
-## 🏗️ Architecture & Workflow
+## 🏗️ Project Architecture
+
+**TurfGrid AI** is built on a modern, decoupled, and highly scalable stack designed for high availability.
+
+### Tech Stack Breakdown
+1. **Frontend (Client Layer)**
+   - **Next.js & React:** Provides a dynamic, glassmorphism UI.
+   - **CSS Variables & Animations:** Delivers a responsive, app-like experience.
+2. **Backend (Application Layer)**
+   - **FastAPI (Python 3.11+):** Handles async REST endpoints, routing, and high-performance server processing.
+   - **Uvicorn:** ASGI web server for running the FastAPI application.
+3. **AI & Orchestration Layer**
+   - **Google Gemini 2.0 Flash:** Primary high-speed reasoning model.
+   - **Groq Llama-3.3-70b-versatile:** Failover LLM to guarantee 100% uptime if Gemini hits quota limits.
+   - **Google Agent Development Kit (ADK):** Powers the Multi-Agent orchestrator routing system.
+4. **Data & Memory Layer**
+   - **MongoDB Atlas:** Cloud database storing structured event data.
+   - **MongoDB Vector Search:** Utilizes `$vectorSearch` with `models/embedding-001` embeddings for intelligent semantic queries.
+5. **External API Integrations**
+   - **Google Maps API:** Live traffic & distance matrix calculations.
+   - **OpenWeatherMap API:** Live atmospheric data.
+   - **Amadeus API:** Live global flight and hotel availability (simulated fallback enabled).
+
+---
+
+## 🔄 Project Workflow
 
 ```mermaid
 graph TD
