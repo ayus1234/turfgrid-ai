@@ -42,26 +42,34 @@ A stunning Next.js frontend featuring an intelligent Chat interface, interactive
 
 ## 🏗️ Project Architecture
 
-**TurfGrid AI** is built on a modern, decoupled, and highly scalable stack designed for high availability.
-
-### Tech Stack Breakdown
-1. **Frontend (Client Layer)**
-   - **Next.js & React:** Provides a dynamic, glassmorphism UI.
-   - **CSS Variables & Animations:** Delivers a responsive, app-like experience.
-2. **Backend (Application Layer)**
-   - **FastAPI (Python 3.11+):** Handles async REST endpoints, routing, and high-performance server processing.
-   - **Uvicorn:** ASGI web server for running the FastAPI application.
-3. **AI & Orchestration Layer**
-   - **Google Gemini 2.0 Flash:** Primary high-speed reasoning model.
-   - **Groq Llama-3.3-70b-versatile:** Failover LLM to guarantee 100% uptime if Gemini hits quota limits.
-   - **Google Agent Development Kit (ADK):** Powers the Multi-Agent orchestrator routing system.
-4. **Data & Memory Layer**
-   - **MongoDB Atlas:** Cloud database storing structured event data.
-   - **MongoDB Vector Search:** Utilizes `$vectorSearch` with `models/embedding-001` embeddings for intelligent semantic queries.
-5. **External API Integrations**
-   - **Google Maps API:** Live traffic & distance matrix calculations.
-   - **OpenWeatherMap API:** Live atmospheric data.
-   - **Amadeus API:** Live global flight and hotel availability (simulated fallback enabled).
+```text
+📦 TurfGrid-AI
+ ├── 📂 backend/                 # FastAPI Backend Server
+ │   ├── 📂 app/                 # Main Application Directory
+ │   │   ├── 📂 agents/          # AI Orchestrator & Specialized Agents (Fan, Business, Crowd)
+ │   │   ├── 📂 data/            # Seed Data & MongoDB Vector Search logic
+ │   │   ├── 📂 tools/           # API Integrations (Weather, Maps, Amadeus)
+ │   │   ├── 📄 config.py        # Environment & Configuration settings
+ │   │   └── 📄 main.py          # Application Entry Point & API Routes
+ │   ├── 📄 requirements.txt     # Python Dependencies
+ │   ├── 📄 run_seed.py          # MongoDB Database Seeding Script
+ │   └── 📄 run.py               # Uvicorn Development Server Runner
+ │
+ ├── 📂 frontend/                # Next.js React Frontend
+ │   ├── 📂 src/
+ │   │   ├── 📂 app/             # Next.js App Router structure
+ │   │   │   ├── 📂 chat/        # LLM Agent Chat Interface
+ │   │   │   ├── 📂 dashboard/   # Analytics & Insights Dashboard
+ │   │   │   ├── 📂 events/      # Venue Explorer & Interactive Modals
+ │   │   │   ├── 📄 globals.css  # Core styles, glassmorphism, animations
+ │   │   │   ├── 📄 layout.js    # Root layout, Navbar, and Footer
+ │   │   │   └── 📄 page.js      # Main Landing Page
+ │   ├── 📄 package.json         # Node.js Dependencies
+ │   └── 📄 next.config.mjs      # Next.js Configuration
+ │
+ ├── 📄 .env                     # Environment Variables (API Keys, DB URL)
+ └── 📄 README.md                # Project Documentation
+```
 
 ---
 
