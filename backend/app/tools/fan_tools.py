@@ -270,7 +270,7 @@ async def semantic_search(query: str, search_type: str = "venues") -> dict:
     try:
         # Embed the search query
         resp = client.models.embed_content(
-            model="models/embedding-001", 
+            model="gemini-embedding-2", 
             contents=query
         )
         if hasattr(resp, 'embeddings') and resp.embeddings:

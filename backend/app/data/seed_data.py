@@ -167,7 +167,7 @@ async def seed_database(db):
                     
                     try:
                         resp = client.models.embed_content(
-                            model="models/embedding-001", 
+                            model="gemini-embedding-2", 
                             contents=text_to_embed
                         )
                         # Depending on SDK version, embeddings could be in resp.embeddings[0].values
