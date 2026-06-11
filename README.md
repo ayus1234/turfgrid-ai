@@ -133,8 +133,8 @@ graph TD
 ### 1. Clone & Configure
 
 ```bash
-git clone https://github.com/ayus1234/scheme-connect.git
-cd scheme-connect
+git clone https://github.com/ayus1234/turfgrid-ai.git
+cd turfgrid-ai
 # Update .env with your specific API Keys!
 ```
 
