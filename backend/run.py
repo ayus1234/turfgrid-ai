@@ -1,4 +1,4 @@
-"""EventSphere AI Backend Entry Point."""
+"""TurfGrid AI Backend Entry Point."""
 import uvicorn
 from app.config import settings
 

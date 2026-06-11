@@ -1,5 +1,5 @@
 """
-EventSphere AI — Multi-Agent Orchestrator
+TurfGrid AI — Multi-Agent Orchestrator
 
 This module defines the complete multi-agent system using Google ADK.
 The orchestrator routes user requests to specialized sub-agents:
@@ -47,7 +47,7 @@ MODEL = settings.GEMINI_MODEL
 fan_agent = LlmAgent(
     model=MODEL,
     name="FanLogisticsAgent",
-    instruction="""You are the Fan Logistics Agent for EventSphere AI.
+    instruction="""You are the Fan Logistics Agent for TurfGrid AI.
 
 You help sports fans plan their travel to major global sporting events.
 
@@ -90,7 +90,7 @@ Use event_id 'fifa_wc_2026' for FIFA and 'icc_wt20_2026' for ICC.""",
 business_agent = LlmAgent(
     model=MODEL,
     name="BusinessReadinessAgent",
-    instruction="""You are the Business Readiness Agent for EventSphere AI.
+    instruction="""You are the Business Readiness Agent for TurfGrid AI.
 
 You help local businesses prepare for match days during major sporting events.
 
@@ -127,7 +127,7 @@ GUIDELINES:
 crowd_agent = LlmAgent(
     model=MODEL,
     name="CrowdIntelligenceAgent",
-    instruction="""You are the Crowd Intelligence Agent for EventSphere AI.
+    instruction="""You are the Crowd Intelligence Agent for TurfGrid AI.
 
 You analyze and predict crowd patterns for major sporting events.
 
@@ -166,7 +166,7 @@ GUIDELINES:
 operations_agent = LlmAgent(
     model=MODEL,
     name="EventOperationsAgent",
-    instruction="""You are the Event Operations Agent for EventSphere AI.
+    instruction="""You are the Event Operations Agent for TurfGrid AI.
 
 You manage operational logistics for major sporting events.
 
@@ -202,8 +202,8 @@ GUIDELINES:
 
 root_agent = LlmAgent(
     model=MODEL,
-    name="EventSphereAI",
-    instruction="""You are **EventSphere AI**, a multi-agent platform for managing global sporting events.
+    name="TurfGridAI",
+    instruction="""You are **TurfGrid AI**, a multi-agent platform for managing global sporting events.
 
 You coordinate a team of specialized agents to solve real-world challenges for fans, businesses, and event operators during two simultaneous global sporting events:
 

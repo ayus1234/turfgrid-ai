@@ -1,4 +1,4 @@
-"""Crowd intelligence tools for EventSphere AI agents."""
+"""Crowd intelligence tools for TurfGrid AI agents."""
 import os
 import requests
 from app.data.seed_data import CROWD_DATA, VENUES, MATCHES

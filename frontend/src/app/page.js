@@ -33,7 +33,7 @@ export default function Home() {
       <section className="hero">
         <div className="hero-badge">🤖 Powered by Gemini + MongoDB MCP</div>
         <h1>
-          <span className="gradient-text">EventSphere</span> AI
+          <span className="gradient-text">TurfGrid</span> AI
         </h1>
         <p>
           A multi-agent platform for fan logistics, local business readiness, and event operations during global sporting events — demonstrated on{" "}
@@ -51,7 +51,7 @@ export default function Home() {
           Two <span className="gradient-text">Global Events</span>. One Platform.
         </h2>
         <p className="section-subtitle">
-          Same agents. Same architecture. Different event data. That's what makes EventSphere AI a platform, not an app.
+          Same agents. Same architecture. Different event data. That's what makes TurfGrid AI a platform, not an app.
         </p>
         <div className="events-grid">
           {events.map((e, i) => (
@@ -113,7 +113,7 @@ export default function Home() {
           Ready to <span className="gradient-text">Experience</span> It?
         </h2>
         <a href="/chat" className="btn btn-primary" style={{ fontSize: "1.1rem", padding: "16px 40px" }}>
-          🚀 Start Chatting with EventSphere AI
+          🚀 Start Chatting with TurfGrid AI
         </a>
       </section>
     </>

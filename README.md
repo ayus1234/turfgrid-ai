@@ -1,4 +1,4 @@
-# 🌐 EventSphere AI
+# 🌐 TurfGrid AI
 
 **A highly-resilient, multi-agent platform for fan logistics, business readiness, and event operations during global sporting events.**
 
@@ -12,9 +12,9 @@
 
 ---
 
-## 🎯 What is EventSphere AI?
+## 🎯 What is TurfGrid AI?
 
-EventSphere AI is an autonomous **multi-agent platform** that manages the complex logistics of large-scale sporting events. Instead of building for a single tournament, we built a **reusable agent architecture** that handles any sporting event — demonstrated with two real events happening simultaneously in 2026:
+TurfGrid AI is an autonomous **multi-agent platform** that manages the complex logistics of large-scale sporting events. Instead of building for a single tournament, we built a **reusable agent architecture** that handles any sporting event — demonstrated with two real events happening simultaneously in 2026:
 
 | Event | Dates | Location | Teams | Venues |
 |-------|-------|----------|-------|--------|
@@ -24,10 +24,10 @@ EventSphere AI is an autonomous **multi-agent platform** that manages the comple
 ## 🔥 Key Hackathon Features
 
 ### 1. MongoDB Vector Search & Semantic Memory
-Instead of relying on rigid keyword lookups, EventSphere AI utilizes **MongoDB `$vectorSearch`**. Venue data is dynamically embedded into 768-dimensional vectors using Google's `models/embedding-001`. This allows users to ask natural language questions like *"Find me stadiums near water with large capacities"* and receive mathematically accurate results from Atlas!
+Instead of relying on rigid keyword lookups, TurfGrid AI utilizes **MongoDB `$vectorSearch`**. Venue data is dynamically embedded into 768-dimensional vectors using Google's `models/embedding-001`. This allows users to ask natural language questions like *"Find me stadiums near water with large capacities"* and receive mathematically accurate results from Atlas!
 
 ### 2. High-Availability LLM Architecture (Gemini ➡️ Groq Failover)
-Enterprise agents cannot afford downtime. EventSphere AI implements a highly resilient architecture. It uses **Google Gemini 2.0 Flash** as its primary orchestrator. However, if the API quota is exhausted (`429 RESOURCE_EXHAUSTED`), the backend intercepts the failure and seamlessly fails over to **Groq's Llama-3.3-70b-versatile** model without dropping the user's session or breaking the UI. 
+Enterprise agents cannot afford downtime. TurfGrid AI implements a highly resilient architecture. It uses **Google Gemini 2.0 Flash** as its primary orchestrator. However, if the API quota is exhausted (`429 RESOURCE_EXHAUSTED`), the backend intercepts the failure and seamlessly fails over to **Groq's Llama-3.3-70b-versatile** model without dropping the user's session or breaking the UI. 
 
 ### 3. Real-Time API Agentic Tool Calling
 Our agents are empowered with tools to fetch live data from the outside world:
@@ -49,7 +49,7 @@ graph TD
     
     %% Orchestrator & High Availability
     subgraph High Availability LLM Router
-        O[EventSphere Orchestrator]
+        O[TurfGrid Orchestrator]
         O -->|Primary: Success| G[Google Gemini 2.0 Flash]
         O -->|Primary: 429 Quota Exhausted| F[Failover Trigger]
         F -->|Fallback| L[Groq Llama-3.3-70b-versatile]

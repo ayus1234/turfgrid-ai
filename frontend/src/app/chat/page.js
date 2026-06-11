@@ -82,7 +82,7 @@ export default function ChatPage() {
       <div className="chat-container">
         <div className="chat-header">
           <h1>
-            <span className="gradient-text">EventSphere</span> AI Chat
+            <span className="gradient-text">TurfGrid</span> AI Chat
           </h1>
           <p>
             Ask about FIFA World Cup 2026, ICC Women's T20 World Cup 2026, or
@@ -94,7 +94,7 @@ export default function ChatPage() {
           {messages.length === 0 && (
             <>
               <div className="message message-ai">
-                👋 Welcome to <strong>EventSphere AI</strong>! I'm your
+                👋 Welcome to <strong>TurfGrid AI</strong>! I'm your
                 multi-agent assistant for global sporting events.
                 <br />
                 <br />

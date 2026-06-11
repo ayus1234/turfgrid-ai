@@ -1,4 +1,4 @@
-"""Seed data for EventSphere AI - FIFA World Cup 2026 & ICC Women's T20 World Cup 2026."""
+"""Seed data for TurfGrid AI - FIFA World Cup 2026 & ICC Women's T20 World Cup 2026."""
 import os
 import json
 try:

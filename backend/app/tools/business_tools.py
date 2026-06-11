@@ -1,4 +1,4 @@
-"""Business readiness tools for EventSphere AI agents."""
+"""Business readiness tools for TurfGrid AI agents."""
 from app.data.seed_data import BUSINESSES, MATCHES, VENUES, CROWD_DATA
 
 

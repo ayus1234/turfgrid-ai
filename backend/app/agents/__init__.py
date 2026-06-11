@@ -1,1 +1,1 @@
-"""Agents package for EventSphere AI."""
+"""Agents package for TurfGrid AI."""

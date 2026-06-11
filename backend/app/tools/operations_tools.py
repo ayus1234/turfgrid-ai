@@ -1,4 +1,4 @@
-"""Event operations tools for EventSphere AI agents."""
+"""Event operations tools for TurfGrid AI agents."""
 from datetime import datetime
 
 

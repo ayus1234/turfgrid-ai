@@ -1,5 +1,5 @@
 """
-EventSphere AI — FastAPI Backend
+TurfGrid AI — FastAPI Backend
 
 Main application serving the multi-agent API for global sporting event management.
 """
@@ -50,7 +50,7 @@ async def lifespan(app: FastAPI):
 # ─── FastAPI App ──────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="EventSphere AI",
+    title="TurfGrid AI",
     description="Multi-agent platform for global sporting event management",
     version="1.0.0",
     lifespan=lifespan,
@@ -81,7 +81,7 @@ class ChatResponse(BaseModel):
 # ─── Agent Runner ─────────────────────────────────────────────────────────────
 
 async def run_agent(message: str, session_id: str) -> dict:
-    """Run the EventSphere AI agent with a user message."""
+    """Run the TurfGrid AI agent with a user message."""
     try:
         from google.adk.agents import LlmAgent
         from google.adk.runners import Runner
@@ -94,12 +94,12 @@ async def run_agent(message: str, session_id: str) -> dict:
 
         runner = Runner(
             agent=root_agent,
-            app_name="eventsphere_ai",
+            app_name="turfgrid_ai",
             session_service=session_service,
         )
 
         session = await session_service.create_session(
-            app_name="eventsphere_ai",
+            app_name="turfgrid_ai",
             user_id="user_" + (session_id or str(uuid.uuid4())[:8]),
         )
 
@@ -154,7 +154,7 @@ async def run_fallback_agent(message: str, session_id: str) -> dict:
         events_summary = "\n".join([f"- {e['name']}: {e['start_date']} to {e['end_date']}, {e['host_countries']}" for e in EVENTS])
         venues_summary = "\n".join([f"- {v['name']} ({v['city']}, {v['country']}) — capacity {v['capacity']}" for v in VENUES[:10]])
 
-        system_prompt = f"""You are EventSphere AI, a multi-agent platform for managing global sporting events.
+        system_prompt = f"""You are TurfGrid AI, a multi-agent platform for managing global sporting events.
 
 CURRENT EVENTS:
 {events_summary}
@@ -240,7 +240,7 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
         return {
             "response": response.text,
             "session_id": session_id or str(uuid.uuid4())[:8],
-            "agent_used": "EventSphereAI (direct)"
+            "agent_used": "TurfGridAI (direct)"
         }
 
     except Exception as e:
@@ -269,7 +269,7 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                     return {
                         "response": chat_completion.choices[0].message.content,
                         "session_id": session_id or str(uuid.uuid4())[:8],
-                        "agent_used": "EventSphereAI (Groq Failover - Llama3)"
+                        "agent_used": "TurfGridAI (Groq Failover - Llama3)"
                     }
                 except Exception as groq_err:
                     return {
@@ -282,7 +282,7 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                 return {
                     "response": "I see you're asking about our events! I've checked the latest data: The match is completely sold out, but public transport via the Metro is currently running smoothly with no delays. The weather at the venue is clear. (Note: Gemini Quota Exceeded. Add GROQ_API_KEY to .env for AI fallback!)",
                     "session_id": session_id or str(uuid.uuid4())[:8],
-                    "agent_used": "EventSphereAI (Mock Mode - Quota Exceeded)"
+                    "agent_used": "TurfGridAI (Mock Mode - Quota Exceeded)"
                 }
         
         return {
@@ -298,7 +298,7 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
 async def root():
     """Health check endpoint."""
     return {
-        "name": "EventSphere AI",
+        "name": "TurfGrid AI",
         "version": "1.0.0",
         "status": "running",
         "description": "Multi-agent platform for global sporting event management",
@@ -330,7 +330,7 @@ async def health():
 
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
-    """Send a message to EventSphere AI."""
+    """Send a message to TurfGrid AI."""
     result = await run_agent(request.message, request.session_id)
     return ChatResponse(**result)
 

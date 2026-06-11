@@ -1,1 +1,1 @@
-"""EventSphere AI Backend Package"""
+"""TurfGrid AI Backend Package"""
