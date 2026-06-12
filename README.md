@@ -61,11 +61,18 @@ Every agent action is tracked and displayed in the chat UI with a visual orchest
 📦 TurfGrid-AI
  ├── 📂 backend/                 # FastAPI Backend Server
  │   ├── 📂 app/                 # Main Application Directory
- │   │   ├── 📂 agents/          # AI Orchestrator & Specialized Agents (Fan, Business, Crowd)
+ │   │   ├── 📂 agents/          # AI Orchestrator & Specialized Agents
+ │   │   │   └── 📄 orchestrator.py  # Root agent + 4 sub-agents with action tools
  │   │   ├── 📂 data/            # Seed Data & MongoDB Vector Search logic
- │   │   ├── 📂 tools/           # API Integrations (Weather, Maps, Amadeus)
+ │   │   ├── 📂 tools/           # Agent Tool Modules
+ │   │   │   ├── 📄 fan_tools.py       # Travel, venues, flights, hotels, semantic search
+ │   │   │   ├── 📄 business_tools.py  # Demand forecasts, checklists
+ │   │   │   ├── 📄 crowd_tools.py     # Crowd forecasts, weather, congestion
+ │   │   │   ├── 📄 operations_tools.py # Incidents, volunteers, resources
+ │   │   │   ├── 📄 action_tools.py    # [NEW] State-altering: save_itinerary, create_staffing_plan, issue_alert
+ │   │   │   └── 📄 memory_tools.py    # [NEW] Persistent user memory: save/get preferences
  │   │   ├── 📄 config.py        # Environment & Configuration settings
- │   │   └── 📄 main.py          # Application Entry Point & API Routes
+ │   │   └── 📄 main.py          # API Routes + v2.0 state endpoints (/api/alerts, /api/itineraries)
  │   ├── 📄 requirements.txt     # Python Dependencies
  │   ├── 📄 run_seed.py          # MongoDB Database Seeding Script
  │   └── 📄 run.py               # Uvicorn Development Server Runner
@@ -73,12 +80,12 @@ Every agent action is tracked and displayed in the chat UI with a visual orchest
  ├── 📂 frontend/                # Next.js React Frontend
  │   ├── 📂 src/
  │   │   ├── 📂 app/             # Next.js App Router structure
- │   │   │   ├── 📂 chat/        # LLM Agent Chat Interface
- │   │   │   ├── 📂 dashboard/   # Analytics & Insights Dashboard
+ │   │   │   ├── 📂 chat/        # Agent Chat + Multi-Agent Transparency Panel
+ │   │   │   ├── 📂 dashboard/   # [v2.0] Operations Command Center (live alerts, plans)
  │   │   │   ├── 📂 events/      # Venue Explorer & Interactive Modals
- │   │   │   ├── 📄 globals.css  # Core styles, glassmorphism, animations
+ │   │   │   ├── 📄 globals.css  # Core styles, glassmorphism, agent steps animations
  │   │   │   ├── 📄 layout.js    # Root layout, Navbar, and Footer
- │   │   │   └── 📄 page.js      # Main Landing Page
+ │   │   │   └── 📄 page.js      # Smart City Command Center Landing Page
  │   ├── 📄 package.json         # Node.js Dependencies
  │   └── 📄 next.config.mjs      # Next.js Configuration
  │
@@ -93,45 +100,60 @@ Every agent action is tracked and displayed in the chat UI with a visual orchest
 ```mermaid
 graph TD
     %% User Interaction
-    U[User Interaction<br/>Next.js UI] -->|Chat Query / UI Click| O
+    U["User Interaction<br/>Next.js UI"] -->|Chat Query / UI Click| O
     
     %% Orchestrator & High Availability
-    subgraph High Availability LLM Router
+    subgraph "High Availability LLM Router"
         O[TurfGrid Orchestrator]
-        O -->|Primary: Success| G[Google Gemini 2.5 Flash]
+        O -->|Primary: Success| G["Google Gemini 2.5 Flash"]
         O -->|Primary: 429 Quota Exhausted| F[Failover Trigger]
-        F -->|Fallback| L[Groq Llama-3.3-70b-versatile]
+        F -->|Fallback| L["Groq Llama-3.3-70b-versatile"]
     end
+
+    %% User Memory
+    O -->|Load/Save Preferences| MEM[("User Profiles<br/>MongoDB")]
 
     %% Specialized Agents
     G -->|Delegates| SA
     L -->|Delegates| SA
 
-    subgraph Autonomous Agents
+    subgraph "Autonomous Agents"
         SA{Specialized Agents}
-        SA -->|Travel & Venues| FL[Fan Logistics Agent]
-        SA -->|Demand & Checklists| BR[Business Readiness Agent]
-        SA -->|Weather & Congestion| CI[Crowd Intelligence Agent]
-        SA -->|Incidents & Staff| EO[Event Operations Agent]
+        SA -->|Travel & Venues| FL["Fan Logistics Agent"]
+        SA -->|Demand & Staffing| BR["Business Readiness Agent"]
+        SA -->|Weather & Congestion| CI["Crowd Intelligence Agent"]
+        SA -->|Incidents & Security| EO["Event Operations Agent"]
     end
 
-    %% External APIs & Tools
-    FL -->|Simulated Data| T1((Amadeus Travel APIs))
-    CI -->|Live Traffic| T2((Google Maps Distance Matrix))
-    CI -->|Live Atmospheric| T3((OpenWeatherMap API))
+    %% State-Altering Actions (v2.0)
+    FL -->|save_itinerary| DB_ITN[("user_itineraries<br/>MongoDB")]
+    BR -->|create_staffing_plan| DB_STP[("staffing_plans<br/>MongoDB")]
+    EO -->|issue_operational_alert| DB_ALT[("operational_alerts<br/>MongoDB")]
 
-    %% Database
-    SA -->|Read/Write / Semantic Search| DB[(MongoDB Atlas<br/>w/ Vector Search)]
+    %% External APIs & Tools
+    FL -->|Simulated Data| T1(("Amadeus Travel APIs"))
+    CI -->|Live Traffic| T2(("Google Maps Distance Matrix"))
+    CI -->|Live Atmospheric| T3(("OpenWeatherMap API"))
+
+    %% Database — Read Path
+    SA -->|"Read / Semantic Vector Search"| DB[("MongoDB Atlas<br/>w/ Vector Search")]
+
+    %% Dashboard reads persisted state
+    DASH["Operations Dashboard<br/>Next.js"] -->|Polls every 30s| DB_ITN
+    DASH -->|Polls every 30s| DB_STP
+    DASH -->|Polls every 30s| DB_ALT
     
     %% Styling
     classDef primary fill:#4285F4,stroke:#fff,stroke-width:2px,color:#fff;
     classDef fallback fill:#F55036,stroke:#fff,stroke-width:2px,color:#fff;
     classDef db fill:#47A248,stroke:#fff,stroke-width:2px,color:#fff;
     classDef tool fill:#f59e0b,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef action fill:#10b981,stroke:#fff,stroke-width:2px,color:#fff;
     
     class G primary;
     class L fallback;
-    class DB db;
+    class DB,MEM db;
+    class DB_ITN,DB_STP,DB_ALT action;
     class T1,T2,T3 tool;
 ```
 
