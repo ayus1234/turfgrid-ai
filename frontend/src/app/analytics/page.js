@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://turfgrid-ai-15593284604.europe-west1.run.app";
 
 export default function AnalyticsPage() {
   const [data, setData] = useState({ alerts_by_venue: [], staffing_impact: [], popular_destinations: [] });
@@ -48,7 +48,7 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div style={{ padding: 40, maxWidth: 1200, margin: "0 auto", minHeight: "100vh" }}>
+    <div className="dashboard">
       <h1 className="section-title" style={{ marginBottom: 8 }}>
         <span className="gradient-text">Historical</span> Analytics
       </h1>
