@@ -285,7 +285,6 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                     groq_client = Groq(api_key=groq_key)
                     
                     from app.tools.action_tools import issue_operational_alert, create_staffing_plan, save_itinerary
-                    import json
 
                     groq_messages = [
                         {"role": "system", "content": system_prompt + tool_context},
