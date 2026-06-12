@@ -353,11 +353,16 @@ async def health():
         except Exception:
             mongo_status = "disconnected"
     else:
-        mongo_status = "not_configured"
+        # Differentiate between "env var not set" and "connection failed"
+        if settings.MONGODB_URI and "localhost" not in settings.MONGODB_URI:
+            mongo_status = "connection_failed"
+        else:
+            mongo_status = "not_configured"
 
     return {
         "status": "healthy",
         "mongodb": mongo_status,
+        "mongodb_uri_set": bool(settings.MONGODB_URI and "localhost" not in settings.MONGODB_URI),
         "gemini_configured": bool(settings.GOOGLE_API_KEY),
     }
 
