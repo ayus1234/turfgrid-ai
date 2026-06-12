@@ -34,6 +34,18 @@ async def lifespan(app: FastAPI):
         # Test connection
         await mongo_client.admin.command("ping")
         print("[OK] Connected to MongoDB Atlas")
+        
+        # Create unique compound index for alerts to prevent duplicates
+        await db["operational_alerts"].create_index(
+            [("venue_name", 1), ("severity", 1)],
+            unique=True
+        )
+        # Create TTL index to expire alerts after 24 hours (86400 seconds)
+        await db["operational_alerts"].create_index(
+            "expires_at",
+            expireAfterSeconds=86400
+        )
+        print("[OK] MongoDB Indexes ensured")
     except Exception as e:
         print(f"[WARN] MongoDB connection failed: {e}")
         print("   Running without database -- using in-memory seed data")

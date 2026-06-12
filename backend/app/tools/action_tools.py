@@ -202,10 +202,18 @@ async def issue_operational_alert(
         "status": "active",
         "city": city,
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "expires_at": datetime.now(timezone.utc),  # BSON Date for TTL index
     }
 
     try:
-        await db["operational_alerts"].insert_one(document)
+        import pymongo.errors
+        try:
+            await db["operational_alerts"].insert_one(document)
+        except pymongo.errors.DuplicateKeyError:
+            return {
+                "status": "error",
+                "message": f"An active {severity} alert for {venue_name} already exists. Please wait for it to expire or check the dashboard."
+            }
         
         # Fire background notifications for high/critical alerts
         if severity.lower() in ["high", "critical"]:
