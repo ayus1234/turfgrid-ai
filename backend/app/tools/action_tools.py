@@ -33,7 +33,8 @@ async def save_itinerary(
     hotel: str = "",
     transport_route: str = "",
     budget: str = "moderate",
-    notes: str = ""
+    notes: str = "",
+    city: str = "Global"
 ) -> dict:
     """Save a confirmed travel itinerary to MongoDB. Call this when a fan approves a travel plan.
 
@@ -66,6 +67,7 @@ async def save_itinerary(
         "budget": budget,
         "notes": notes,
         "status": "confirmed",
+        "city": city,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -103,7 +105,8 @@ async def create_staffing_plan(
     recommended_staff: int,
     peak_hours: str = "2 hours before to 2 hours after match",
     inventory_notes: str = "",
-    special_preparations: str = ""
+    special_preparations: str = "",
+    city: str = "Global"
 ) -> dict:
     """Create and save a staffing plan for a local business on match day. Call this when a business owner approves a preparation plan.
 
@@ -139,6 +142,7 @@ async def create_staffing_plan(
         "inventory_notes": inventory_notes,
         "special_preparations": special_preparations,
         "status": "active",
+        "city": city,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -170,7 +174,8 @@ async def issue_operational_alert(
     alert_type: str,
     severity: str,
     message: str,
-    recommended_actions: str = ""
+    recommended_actions: str = "",
+    city: str = "Global"
 ) -> dict:
     """Issue an operational alert for a venue. Call this to flag crowd, security, medical, or facility issues.
 
@@ -195,11 +200,21 @@ async def issue_operational_alert(
         "message": message,
         "recommended_actions": [a.strip() for a in recommended_actions.split(",")] if recommended_actions else [],
         "status": "active",
+        "city": city,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
     try:
         await db["operational_alerts"].insert_one(document)
+        
+        # Fire background notifications for high/critical alerts
+        if severity.lower() in ["high", "critical"]:
+            import asyncio
+            from app.services.notification_service import NotificationService
+            asyncio.create_task(
+                NotificationService.dispatch_critical_alert(alert_id, venue_name, severity, message)
+            )
+
         return {
             "status": "success",
             "message": f"🚨 Alert {alert_id} issued and saved to MongoDB!",

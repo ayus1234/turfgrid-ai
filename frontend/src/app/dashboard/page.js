@@ -9,6 +9,7 @@ export default function DashboardPage() {
   const [itineraries, setItineraries] = useState([]);
   const [staffingPlans, setStaffingPlans] = useState([]);
   const [lastRefresh, setLastRefresh] = useState(null);
+  const [selectedCity, setSelectedCity] = useState("Global");
 
   const fetchLiveData = () => {
     fetch(`${API_URL}/api/health`)
@@ -16,17 +17,19 @@ export default function DashboardPage() {
       .then(setHealth)
       .catch(() => setHealth({ status: "offline", mongodb: "unknown", gemini_configured: false }));
 
-    fetch(`${API_URL}/api/alerts`)
+    const query = selectedCity !== "Global" ? `?city=${encodeURIComponent(selectedCity)}` : "";
+
+    fetch(`${API_URL}/api/alerts${query}`)
       .then((r) => r.json())
       .then((d) => setAlerts(d.alerts || []))
       .catch(() => {});
 
-    fetch(`${API_URL}/api/itineraries`)
+    fetch(`${API_URL}/api/itineraries${query}`)
       .then((r) => r.json())
       .then((d) => setItineraries(d.itineraries || []))
       .catch(() => {});
 
-    fetch(`${API_URL}/api/staffing-plans`)
+    fetch(`${API_URL}/api/staffing-plans${query}`)
       .then((r) => r.json())
       .then((d) => setStaffingPlans(d.plans || []))
       .catch(() => {});
@@ -38,7 +41,7 @@ export default function DashboardPage() {
     fetchLiveData();
     const interval = setInterval(fetchLiveData, 30000); // Auto-refresh every 30s
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedCity]);
 
   const stats = [
     { value: "2", label: "Active Events", color: "var(--accent-blue)" },
@@ -78,6 +81,24 @@ export default function DashboardPage() {
       <p className="section-subtitle" style={{ marginBottom: 40 }}>
         Live autonomous agent activity, alerts, and system state
       </p>
+
+      {/* City Selector */}
+      <div style={{ marginBottom: 24, display: "flex", alignItems: "center", gap: 12 }}>
+        <span style={{ fontWeight: 600 }}>Filter by City:</span>
+        <select 
+          value={selectedCity} 
+          onChange={(e) => setSelectedCity(e.target.value)}
+          style={{ background: "var(--bg-glass)", border: "1px solid var(--border-glass)", color: "var(--text-primary)", padding: "8px 16px", borderRadius: 8, fontSize: "1rem" }}
+        >
+          <option value="Global">🌍 Global View</option>
+          <option value="London">🇬🇧 London</option>
+          <option value="Birmingham">🇬🇧 Birmingham</option>
+          <option value="Manchester">🇬🇧 Manchester</option>
+          <option value="New York">🇺🇸 New York</option>
+          <option value="Los Angeles">🇺🇸 Los Angeles</option>
+          <option value="Mexico City">🇲🇽 Mexico City</option>
+        </select>
+      </div>
 
       {/* System Status */}
       <div className="glass-strong" style={{ padding: 20, marginBottom: 24, display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>

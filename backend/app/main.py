@@ -124,11 +124,21 @@ async def run_agent(message: str, session_id: str) -> dict:
                         response_text += part.text
                     # Capture tool calls for transparency
                     if hasattr(part, 'function_call') and part.function_call:
+                        func_name = part.function_call.name
                         agent_steps.append({
                             "agent": event.author if hasattr(event, 'author') and event.author else "Agent",
-                            "action": f"Calling {part.function_call.name}()",
+                            "action": f"Calling {func_name}()",
                             "status": "done"
                         })
+                        
+                        # --- MULTI-AGENT WORKFLOW TRIGGER ---
+                        if func_name == "save_itinerary":
+                            import asyncio
+                            print("[WORKFLOW] save_itinerary detected. Triggering Business Agent in background.")
+                            asyncio.create_task(run_agent(
+                                "A new fan itinerary was just saved. Automatically generate a staffing plan for a cafe near the venue. Assume normal staff is 4.", 
+                                "system_workflow_bot"
+                            ))
                     if hasattr(part, 'function_response') and part.function_response:
                         agent_steps.append({
                             "agent": event.author if hasattr(event, 'author') and event.author else "Agent",
@@ -388,6 +398,13 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                                     result = await create_staffing_plan(**args)
                                 elif func_name == "save_itinerary":
                                     result = await save_itinerary(**args)
+                                    # --- MULTI-AGENT WORKFLOW TRIGGER (Fallback) ---
+                                    import asyncio
+                                    print("[WORKFLOW] save_itinerary detected in Fallback. Triggering Business Agent in background.")
+                                    asyncio.create_task(run_fallback_agent(
+                                        "A new fan itinerary was just saved. Automatically generate a staffing plan for a cafe near the venue. Assume normal staff is 4.", 
+                                        "system_workflow_bot"
+                                    ))
                                 
                                 agent_steps.append({"agent": "GroqFallback", "action": "MongoDB Write Successful", "status": "done"})
                                 final_response_text += f"\n\n🚨 *{func_name} was successfully executed by the backup AI! Dashboard updated.*"
@@ -592,12 +609,13 @@ async def api_get_distance(origin: str, venue_id: str):
 # ─── v2.0: State-Altering Data Routes ────────────────────────────────────────
 
 @app.get("/api/itineraries")
-async def get_itineraries():
+async def get_itineraries(city: str = None):
     """Get all saved fan itineraries."""
     if db is None:
         return {"itineraries": [], "count": 0}
     try:
-        cursor = db["user_itineraries"].find().sort("created_at", -1).limit(50)
+        query = {"city": city} if city and city != "Global" else {}
+        cursor = db["user_itineraries"].find(query).sort("created_at", -1).limit(50)
         results = await cursor.to_list(length=50)
         for r in results:
             r["_id"] = str(r["_id"])
@@ -607,12 +625,13 @@ async def get_itineraries():
 
 
 @app.get("/api/staffing-plans")
-async def get_staffing_plans():
+async def get_staffing_plans(city: str = None):
     """Get all active staffing plans."""
     if db is None:
         return {"plans": [], "count": 0}
     try:
-        cursor = db["staffing_plans"].find().sort("created_at", -1).limit(50)
+        query = {"city": city} if city and city != "Global" else {}
+        cursor = db["staffing_plans"].find(query).sort("created_at", -1).limit(50)
         results = await cursor.to_list(length=50)
         for r in results:
             r["_id"] = str(r["_id"])
@@ -622,18 +641,66 @@ async def get_staffing_plans():
 
 
 @app.get("/api/alerts")
-async def get_alerts():
+async def get_alerts(city: str = None):
     """Get all operational alerts."""
     if db is None:
         return {"alerts": [], "count": 0}
     try:
-        cursor = db["operational_alerts"].find().sort("created_at", -1).limit(50)
+        query = {"city": city} if city and city != "Global" else {}
+        cursor = db["operational_alerts"].find(query).sort("created_at", -1).limit(50)
         results = await cursor.to_list(length=50)
         for r in results:
             r["_id"] = str(r["_id"])
         return {"alerts": results, "count": len(results)}
     except Exception as e:
         return {"alerts": [], "count": 0, "error": str(e)}
+
+@app.get("/api/analytics")
+async def get_analytics(city: str = None):
+    """Get historical analytics via MongoDB aggregation."""
+    if db is None:
+        return {"error": "MongoDB not connected"}
+    try:
+        match_stage = {"$match": {"city": city}} if city and city != "Global" else {"$match": {}}
+        
+        # 1. Alert Frequency per Venue
+        alerts_pipeline = [
+            match_stage,
+            {"$group": {"_id": "$venue_name", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}}
+        ]
+        alerts_cursor = db["operational_alerts"].aggregate(alerts_pipeline)
+        alerts_by_venue = await alerts_cursor.to_list(length=10)
+        
+        # 2. Staffing Impact
+        staffing_pipeline = [
+            match_stage,
+            {"$group": {
+                "_id": "$business_type", 
+                "total_extra_staff": {"$sum": "$additional_staff_needed"},
+                "plans_count": {"$sum": 1}
+            }},
+            {"$sort": {"total_extra_staff": -1}}
+        ]
+        staffing_cursor = db["staffing_plans"].aggregate(staffing_pipeline)
+        staffing_impact = await staffing_cursor.to_list(length=10)
+        
+        # 3. Popular Itinerary Destinations
+        itinerary_pipeline = [
+            match_stage,
+            {"$group": {"_id": "$destination_city", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}}
+        ]
+        itinerary_cursor = db["user_itineraries"].aggregate(itinerary_pipeline)
+        popular_destinations = await itinerary_cursor.to_list(length=10)
+
+        return {
+            "alerts_by_venue": [{"venue": r["_id"], "count": r["count"]} for r in alerts_by_venue if r["_id"]],
+            "staffing_impact": [{"type": r["_id"], "extra_staff": r["total_extra_staff"]} for r in staffing_impact if r["_id"]],
+            "popular_destinations": [{"city": r["_id"], "count": r["count"]} for r in popular_destinations if r["_id"]]
+        }
+    except Exception as e:
+        return {"error": str(e)}
 
 
 @app.get("/api/user-profile/{user_id}")
