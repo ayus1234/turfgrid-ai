@@ -284,26 +284,119 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                     from groq import Groq
                     groq_client = Groq(api_key=groq_key)
                     
-                    groq_messages = [
-                        {"role": "system", "content": system_prompt + tool_context},
-                        {"role": "user", "content": message}
+                    from app.tools.action_tools import issue_operational_alert, create_staffing_plan, save_itinerary
+                    import json
+
+                    groq_tools = [
+                        {
+                            "type": "function",
+                            "function": {
+                                "name": "issue_operational_alert",
+                                "description": "Issue an operational alert for a venue.",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "venue_name": {"type": "string"},
+                                        "alert_type": {"type": "string", "enum": ["crowd", "security", "medical", "weather", "facility", "transport"]},
+                                        "severity": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+                                        "message": {"type": "string"},
+                                        "recommended_actions": {"type": "string"}
+                                    },
+                                    "required": ["venue_name", "alert_type", "severity", "message"]
+                                }
+                            }
+                        },
+                        {
+                            "type": "function",
+                            "function": {
+                                "name": "create_staffing_plan",
+                                "description": "Create and save a staffing plan for a local business.",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "business_name": {"type": "string"},
+                                        "business_type": {"type": "string"},
+                                        "venue_name": {"type": "string"},
+                                        "match_description": {"type": "string"},
+                                        "match_date": {"type": "string"},
+                                        "normal_staff": {"type": "integer"},
+                                        "recommended_staff": {"type": "integer"},
+                                        "peak_hours": {"type": "string"},
+                                        "inventory_notes": {"type": "string"},
+                                        "special_preparations": {"type": "string"}
+                                    },
+                                    "required": ["business_name", "business_type", "venue_name", "match_description", "match_date", "normal_staff", "recommended_staff"]
+                                }
+                            }
+                        },
+                        {
+                            "type": "function",
+                            "function": {
+                                "name": "save_itinerary",
+                                "description": "Save a confirmed travel itinerary.",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user_name": {"type": "string"},
+                                        "event": {"type": "string"},
+                                        "origin": {"type": "string"},
+                                        "destination_city": {"type": "string"},
+                                        "matches": {"type": "string"},
+                                        "hotel": {"type": "string"},
+                                        "transport_route": {"type": "string"},
+                                        "budget": {"type": "string"},
+                                        "notes": {"type": "string"}
+                                    },
+                                    "required": ["user_name", "event", "origin", "destination_city", "matches"]
+                                }
+                            }
+                        }
                     ]
-                    
+
                     chat_completion = groq_client.chat.completions.create(
                         messages=groq_messages,
                         model="llama-3.3-70b-versatile",
                         temperature=0.7,
+                        tools=groq_tools,
+                        tool_choice="auto"
                     )
+
+                    response_message = chat_completion.choices[0].message
+                    final_response_text = response_message.content or "I have processed your request and updated the system."
                     
+                    agent_steps = [
+                        {"agent": "TurfGridAI", "action": "Gemini 429 Limit Hit", "status": "warning"},
+                        {"agent": "TurfGridAI", "action": "Failover to Groq Llama-3", "status": "done"}
+                    ]
+
+                    # Handle Groq tool calls!
+                    if response_message.tool_calls:
+                        for tool_call in response_message.tool_calls:
+                            func_name = tool_call.function.name
+                            args = json.loads(tool_call.function.arguments)
+                            
+                            agent_steps.append({"agent": "GroqFallback", "action": f"Calling {func_name}()", "status": "done"})
+                            
+                            try:
+                                if func_name == "issue_operational_alert":
+                                    result = await issue_operational_alert(**args)
+                                elif func_name == "create_staffing_plan":
+                                    result = await create_staffing_plan(**args)
+                                elif func_name == "save_itinerary":
+                                    result = await save_itinerary(**args)
+                                
+                                agent_steps.append({"agent": "GroqFallback", "action": "MongoDB Write Successful", "status": "done"})
+                                final_response_text += f"\n\n🚨 *{func_name} was successfully executed by the backup AI! Dashboard updated.*"
+                            except Exception as tool_err:
+                                agent_steps.append({"agent": "GroqFallback", "action": f"Tool failed: {str(tool_err)}", "status": "warning"})
+
+                    agent_steps.append({"agent": "TurfGridAI", "action": "Response generated via Groq", "status": "done"})
+
                     return {
-                        "response": chat_completion.choices[0].message.content,
+                        "response": final_response_text,
                         "session_id": session_id or str(uuid.uuid4())[:8],
                         "agent_used": "TurfGridAI (Groq Failover - Llama3)",
-                        "agent_steps": [
-                            {"agent": "TurfGridAI", "action": "Gemini 2.5 Flash unavailable (429)", "status": "warning"},
-                            {"agent": "TurfGridAI", "action": "Failover to Groq Llama-3", "status": "done"},
-                            {"agent": "TurfGridAI", "action": "Response generated via Groq", "status": "done"}
-                        ]
+                        "agent_steps": agent_steps
                     }
                 except Exception as groq_err:
                     return {
