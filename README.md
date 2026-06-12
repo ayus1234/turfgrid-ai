@@ -53,6 +53,13 @@ Our agents are empowered with tools to fetch live data from the outside world:
 ### 6. Multi-Agent Transparency & Operations Dashboard
 Every agent action is tracked and displayed in the chat UI with a visual orchestration chain (✅ Orchestrator → ✅ Fan Agent → ✅ Tool Called → ✅ MongoDB Updated). The Operations Dashboard polls MongoDB every 30 seconds to show live alerts, saved itineraries, and staffing plans in real-time.
 
+### 7. 🚀 v3.0 Enterprise Architecture Upgrades
+We recently transformed the project into a true startup-grade application:
+- **Multi-Tenant City Dashboards:** The dashboard now supports filtering by city, allowing parallel management of New York, London, Los Angeles, etc.
+- **Real Notifications System:** Critical operational alerts now trigger background asynchronous tasks that dispatch simulated SMS, Email, and Webhook notifications.
+- **Historical Analytics (/analytics):** A dedicated analytics portal powered by pure MongoDB `$group` and `$sum` aggregation pipelines to visualize alert frequencies, staffing impact, and fan destinations.
+- **Agent-to-Agent Workflows:** True multi-agent collaboration! When the Fan Agent saves an itinerary, the backend automatically spins up the Business Readiness Agent in the background to autonomously generate a staffing plan for the venue, anticipating demand without user input.
+
 ---
 
 ## 🏗️ Project Architecture
