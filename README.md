@@ -78,8 +78,10 @@ We recently transformed the project into a true startup-grade application:
  │   │   │   ├── 📄 operations_tools.py # Incidents, volunteers, resources
  │   │   │   ├── 📄 action_tools.py    # [NEW] State-altering: save_itinerary, create_staffing_plan, issue_alert
  │   │   │   └── 📄 memory_tools.py    # [NEW] Persistent user memory: save/get preferences
+ │   │   ├── 📂 services/         # [v3.0] Background services
+ │   │   │   └── 📄 notification_service.py # Event-driven SMS/Email/Webhooks
  │   │   ├── 📄 config.py        # Environment & Configuration settings
- │   │   └── 📄 main.py          # API Routes + v2.0 state endpoints (/api/alerts, /api/itineraries)
+ │   │   └── 📄 main.py          # API Routes + v3.0 state endpoints & workflows
  │   ├── 📄 requirements.txt     # Python Dependencies
  │   ├── 📄 run_seed.py          # MongoDB Database Seeding Script
  │   └── 📄 run.py               # Uvicorn Development Server Runner
@@ -87,8 +89,9 @@ We recently transformed the project into a true startup-grade application:
  ├── 📂 frontend/                # Next.js React Frontend
  │   ├── 📂 src/
  │   │   ├── 📂 app/             # Next.js App Router structure
+ │   │   │   ├── 📂 analytics/   # [v3.0] Historical MongoDB Aggregation Dashboard
  │   │   │   ├── 📂 chat/        # Agent Chat + Multi-Agent Transparency Panel
- │   │   │   ├── 📂 dashboard/   # [v2.0] Operations Command Center (live alerts, plans)
+ │   │   │   ├── 📂 dashboard/   # [v3.0] Multi-Tenant Operations Command Center
  │   │   │   ├── 📂 events/      # Venue Explorer & Interactive Modals
  │   │   │   ├── 📄 globals.css  # Core styles, glassmorphism, agent steps animations
  │   │   │   ├── 📄 layout.js    # Root layout, Navbar, and Footer
@@ -132,10 +135,14 @@ graph TD
         SA -->|Incidents & Security| EO["Event Operations Agent"]
     end
 
-    %% State-Altering Actions (v2.0)
+    %% State-Altering Actions (v3.0)
     FL -->|save_itinerary| DB_ITN[("user_itineraries<br/>MongoDB")]
     BR -->|create_staffing_plan| DB_STP[("staffing_plans<br/>MongoDB")]
     EO -->|issue_operational_alert| DB_ALT[("operational_alerts<br/>MongoDB")]
+
+    %% v3.0 Agent-to-Agent Workflows & Notifications
+    DB_ITN -.->|Background Trigger| BR
+    DB_ALT -.->|Dispatch| NOTIFY[["Notification Service<br/>(SMS, Email, Webhooks)"]]
 
     %% External APIs & Tools
     FL -->|Simulated Data| T1(("Amadeus Travel APIs"))
@@ -150,18 +157,25 @@ graph TD
     DASH -->|Polls every 30s| DB_STP
     DASH -->|Polls every 30s| DB_ALT
     
+    %% Analytics
+    ANALYTICS["Analytics Dashboard<br/>Next.js"] -->|MongoDB Aggregation| DB_ITN
+    ANALYTICS -->|MongoDB Aggregation| DB_STP
+    ANALYTICS -->|MongoDB Aggregation| DB_ALT
+    
     %% Styling
     classDef primary fill:#4285F4,stroke:#fff,stroke-width:2px,color:#fff;
     classDef fallback fill:#F55036,stroke:#fff,stroke-width:2px,color:#fff;
     classDef db fill:#47A248,stroke:#fff,stroke-width:2px,color:#fff;
     classDef tool fill:#f59e0b,stroke:#fff,stroke-width:2px,color:#fff;
     classDef action fill:#10b981,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef service fill:#8E75B2,stroke:#fff,stroke-width:2px,color:#fff;
     
     class G primary;
     class L fallback;
     class DB,MEM db;
     class DB_ITN,DB_STP,DB_ALT action;
     class T1,T2,T3 tool;
+    class NOTIFY service;
 ```
 
 ## 🚀 Quick Start
