@@ -425,10 +425,15 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                                         "system_workflow_bot"
                                     ))
                                 
-                                agent_steps.append({"agent": "GroqFallback", "action": "MongoDB Write Successful", "status": "done"})
-                                final_response_text += f"\n\n🚨 *{func_name} was successfully executed by the backup AI! Dashboard updated.*"
+                                if result and result.get("status") == "error":
+                                    agent_steps.append({"agent": "GroqFallback", "action": f"Tool error: {result.get('message')}", "status": "warning"})
+                                    final_response_text += f"\n\n🚨 *Could not execute {func_name}: {result.get('message')}*"
+                                else:
+                                    agent_steps.append({"agent": "GroqFallback", "action": "MongoDB Write Successful", "status": "done"})
+                                    final_response_text += f"\n\n🚨 *{func_name} was successfully executed by the backup AI! Dashboard updated.*"
                             except Exception as tool_err:
                                 agent_steps.append({"agent": "GroqFallback", "action": f"Tool failed: {str(tool_err)}", "status": "warning"})
+                                final_response_text += f"\n\n🚨 *Tool {func_name} failed unexpectedly.*"
 
                     agent_steps.append({"agent": "TurfGridAI", "action": "Response generated via Groq", "status": "done"})
 
