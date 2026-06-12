@@ -44,7 +44,12 @@ export default function ChatPage() {
       const data = await res.json();
       setMessages((prev) => [
         ...prev,
-        { role: "ai", content: data.response, agent: data.agent_used },
+        {
+          role: "ai",
+          content: data.response,
+          agent: data.agent_used,
+          steps: data.agent_steps || [],
+        },
       ]);
     } catch (err) {
       setMessages((prev) => [
@@ -95,18 +100,18 @@ export default function ChatPage() {
             <>
               <div className="message message-ai">
                 👋 Welcome to <strong>TurfGrid AI</strong>! I'm your
-                multi-agent assistant for global sporting events.
+                autonomous Smart City Command Center for global sporting events.
                 <br />
                 <br />
-                I can help you with:
-                <br />• ✈️ <strong>Travel planning</strong> — itineraries, hotels,
-                transport
-                <br />• 📊 <strong>Business prep</strong> — staffing, inventory,
-                match-day checklists
-                <br />• 👥 <strong>Crowd intel</strong> — congestion forecasts,
-                arrival times
-                <br />• 🛡️ <strong>Operations</strong> — volunteers, security,
-                incidents
+                I don't just recommend — I <strong>execute actions</strong>:
+                <br />• ✈️ <strong>Save travel itineraries</strong> — plan and
+                persist your trip to MongoDB
+                <br />• 📊 <strong>Create staffing plans</strong> — generate
+                match-day schedules for businesses
+                <br />• 🚨 <strong>Issue operational alerts</strong> — flag
+                safety and crowd concerns
+                <br />• 🧠 <strong>Remember your preferences</strong> — diet,
+                budget, accessibility
                 <br />
                 <br />
                 Try one of the suggestions below or ask anything!
@@ -126,14 +131,39 @@ export default function ChatPage() {
           )}
 
           {messages.map((m, i) => (
-            <div key={i} className={`message message-${m.role}`}>
-              {m.role === "ai" ? (
-                <div
-                  dangerouslySetInnerHTML={{ __html: formatContent(m.content) }}
-                />
-              ) : (
-                m.content
+            <div key={i}>
+              {/* Agent Steps — Multi-Agent Transparency */}
+              {m.role === "ai" && m.steps && m.steps.length > 0 && (
+                <div className="agent-steps">
+                  <div className="agent-steps-header">
+                    <span>🤖 Agent Activity</span>
+                  </div>
+                  <div className="agent-steps-list">
+                    {m.steps.map((step, j) => (
+                      <div
+                        key={j}
+                        className={`agent-step ${step.status === "warning" ? "step-warning" : "step-done"}`}
+                        style={{ animationDelay: `${j * 0.1}s` }}
+                      >
+                        <span className="step-icon">
+                          {step.status === "warning" ? "⚠️" : "✅"}
+                        </span>
+                        <span className="step-agent">{step.agent}</span>
+                        <span className="step-action">{step.action}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
+              <div className={`message message-${m.role}`}>
+                {m.role === "ai" ? (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: formatContent(m.content) }}
+                  />
+                ) : (
+                  m.content
+                )}
+              </div>
             </div>
           ))}
 

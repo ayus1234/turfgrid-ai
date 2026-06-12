@@ -646,3 +646,79 @@ body {
 }
 
 .tab:hover:not(.active) { color: var(--text-primary); }
+
+/* ─── Agent Steps (Multi-Agent Transparency) ────────────────────── */
+.agent-steps {
+  align-self: flex-start;
+  max-width: 85%;
+  margin-bottom: 4px;
+  animation: fadeUp 0.3s ease;
+}
+
+.agent-steps-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.agent-steps-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.agent-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  animation: stepFadeIn 0.4s ease both;
+}
+
+.step-done {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: var(--accent-emerald);
+}
+
+.step-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: var(--accent-amber);
+}
+
+.step-icon { font-size: 0.7rem; }
+
+.step-agent {
+  font-weight: 700;
+  margin-right: 2px;
+}
+
+.step-action {
+  color: var(--text-secondary);
+}
+
+@keyframes stepFadeIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── Alert Cards ────────────────────────────────────────────────── */
+.alert-card {
+  transition: all 0.3s;
+  animation: fadeUp 0.4s ease;
+}
+
+.alert-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}

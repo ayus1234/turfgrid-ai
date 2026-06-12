@@ -1,9 +1,9 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "TurfGrid AI — Multi-Agent Platform for Global Sporting Events",
-  description: "An autonomous multi-agent platform powered by Gemini and MongoDB MCP for managing fan logistics, business readiness, and event operations during FIFA World Cup 2026 and ICC Women's T20 World Cup 2026.",
-  keywords: "AI, agents, FIFA, ICC, World Cup, cricket, sports, event management, Gemini, MongoDB",
+  title: "TurfGrid AI — Smart City Command Center for Global Sporting Events",
+  description: "An autonomous multi-agent platform that protects cities and businesses from the logistical chaos of global sporting surges. Agents execute actions, save itineraries, create staffing plans, and issue operational alerts — powered by Gemini 2.5 Flash, MongoDB Atlas Vector Search, and Groq failover.",
+  keywords: "AI, agents, FIFA, ICC, World Cup, cricket, sports, event management, Gemini, MongoDB, smart city, autonomous agents",
 };
 
 export default function RootLayout({ children }) {
@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
             <li><a href="/">Home</a></li>
             <li><a href="/chat">Chat</a></li>
             <li><a href="/events">Events</a></li>
-            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/dashboard">Operations</a></li>
           </ul>
         </nav>
         {children}

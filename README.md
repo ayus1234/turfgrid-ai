@@ -1,6 +1,6 @@
 # 🌐 TurfGrid AI
 
-**A highly-resilient, multi-agent platform for fan logistics, business readiness, and event operations during global sporting events.**
+**Smart City Command Center — An autonomous agent swarm that protects cities and businesses from the logistical chaos of global sporting surges.**
 
 > Built for the [Google Cloud Rapid Agent Hackathon](https://devpost.com/) — MongoDB Track
 
@@ -17,7 +17,7 @@
 
 ## 🎯 What is TurfGrid AI?
 
-TurfGrid AI is an autonomous **multi-agent platform** that manages the complex logistics of large-scale sporting events. Instead of building for a single tournament, we built a **reusable agent architecture** that handles any sporting event — demonstrated with two real events happening simultaneously in 2026:
+TurfGrid AI is an autonomous **Smart City Command Center** that manages the complex logistics of large-scale sporting events. When 80,000 fans descend on a city, local infrastructure breaks — restaurants run out of inventory, roads congest, and security is overwhelmed. Our agents don't just recommend — they **execute actions**, save data to MongoDB, and maintain persistent user memory. Demonstrated with two real events happening simultaneously in 2026:
 
 | Event | Dates | Location | Teams | Venues |
 |-------|-------|----------|-------|--------|
@@ -32,14 +32,26 @@ Instead of relying on rigid keyword lookups, TurfGrid AI utilizes **MongoDB `$ve
 ### 2. High-Availability LLM Architecture (Gemini ➡️ Groq Failover)
 Enterprise agents cannot afford downtime. TurfGrid AI implements a highly resilient architecture. It uses **Google Gemini 2.5 Flash** as its primary orchestrator. However, if the API quota is exhausted (`429 RESOURCE_EXHAUSTED`), the backend intercepts the failure and seamlessly fails over to **Groq's Llama-3.3-70b-versatile** model without dropping the user's session or breaking the UI. 
 
-### 3. Real-Time API Agentic Tool Calling
+### 3. Autonomous State-Altering Actions (v2.0)
+Our agents don't just recommend — they **execute**. When a fan approves a travel plan, the agent autonomously calls `save_itinerary()` and writes a confirmed booking to MongoDB. When a business owner asks for staffing advice, the agent calls `create_staffing_plan()` to persist an actionable schedule. Operations agents call `issue_operational_alert()` to flag safety concerns in real-time.
+
+**New MongoDB Collections:**
+- `user_itineraries` — Confirmed fan travel plans
+- `staffing_plans` — Business match-day staffing schedules
+- `operational_alerts` — Live safety and crowd alerts
+- `user_profiles` — Persistent user preferences (diet, accessibility, budget)
+
+### 4. Persistent User Memory
+The system remembers users across sessions. If a fan says *"I'm vegetarian and need wheelchair access,"* the Orchestrator saves these preferences to MongoDB. The next time they ask for restaurant recommendations, the agent automatically filters for vegetarian, accessible options — without the user repeating themselves.
+
+### 5. Real-Time API Agentic Tool Calling
 Our agents are empowered with tools to fetch live data from the outside world:
 - **Google Maps Distance Matrix API:** Agents calculate real-time driving durations and traffic delays from user locations to venues.
 - **OpenWeatherMap API:** Agents fetch live atmospheric data to predict crowd congestion mitigation strategies.
 - **Amadeus Travel API (Simulated):** Agents dynamically extract destinations using a custom NLP intent parser and generate highly realistic flight itineraries and hotel pricing.
 
-### 4. Interactive Glassmorphism Dashboard
-A stunning Next.js frontend featuring an intelligent Chat interface, interactive statistics, and a live Event Explorer. Clicking on any venue opens an interactive modal that pings our backend endpoints for real-time weather and traffic calculations!
+### 6. Multi-Agent Transparency & Operations Dashboard
+Every agent action is tracked and displayed in the chat UI with a visual orchestration chain (✅ Orchestrator → ✅ Fan Agent → ✅ Tool Called → ✅ MongoDB Updated). The Operations Dashboard polls MongoDB every 30 seconds to show live alerts, saved itineraries, and staffing plans in real-time.
 
 ---
 

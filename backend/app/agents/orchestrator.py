@@ -7,6 +7,9 @@ The orchestrator routes user requests to specialized sub-agents:
   - Business Readiness Agent
   - Crowd Intelligence Agent
   - Event Operations Agent
+
+v2.0: Agents now EXECUTE actions (save itineraries, create plans, issue alerts)
+      and maintain persistent user memory across sessions.
 """
 import os
 from google.adk.agents import LlmAgent
@@ -36,6 +39,15 @@ from app.tools.operations_tools import (
     get_volunteer_schedule,
     allocate_resources,
 )
+from app.tools.action_tools import (
+    save_itinerary,
+    create_staffing_plan,
+    issue_operational_alert,
+)
+from app.tools.memory_tools import (
+    save_user_preference,
+    get_user_profile,
+)
 
 # Set API key for Gemini
 os.environ["GOOGLE_API_KEY"] = settings.GOOGLE_API_KEY
@@ -62,6 +74,13 @@ YOUR CAPABILITIES:
 4. Get event details
 5. Create personalized travel itineraries
 6. Find nearby hotels, restaurants, and cafes
+7. **SAVE confirmed itineraries to MongoDB** using save_itinerary
+
+CRITICAL BEHAVIOR — AUTONOMOUS ACTIONS:
+- After creating an itinerary or travel plan, ALWAYS ask: "Shall I save this itinerary for you?"
+- If the user confirms (says yes, sure, save it, looks good, etc.), immediately call save_itinerary() to persist it to the database.
+- When saving, extract: user_name, event, origin, destination_city, matches, hotel, transport_route, budget from the conversation.
+- After saving, confirm: "✅ Your itinerary has been saved! You can view it on the Operations Dashboard."
 
 GUIDELINES:
 - Always ask which event the fan is interested in if not specified
@@ -82,6 +101,7 @@ Use event_id 'fifa_wc_2026' for FIFA and 'icc_wt20_2026' for ICC.""",
         get_nearby_businesses,
         semantic_search,
         calculate_live_travel_time,
+        save_itinerary,
     ],
 )
 
@@ -104,6 +124,13 @@ YOUR CAPABILITIES:
 3. Generate inventory preparation tips
 4. Create detailed preparation checklists by business type
 5. Find venues and matches to contextualize advice
+6. **CREATE and SAVE staffing plans to MongoDB** using create_staffing_plan
+
+CRITICAL BEHAVIOR — AUTONOMOUS ACTIONS:
+- After generating demand predictions or staffing recommendations, ALWAYS ask: "Would you like me to create an official staffing plan for this?"
+- If the user confirms, immediately call create_staffing_plan() to persist it to the database.
+- Extract: business_name, business_type, venue_name, match_description, match_date, normal_staff, recommended_staff, peak_hours, inventory_notes from the conversation.
+- After saving, confirm: "✅ Staffing plan created and saved! Your team can view it on the Operations Dashboard."
 
 GUIDELINES:
 - Be specific with numbers (e.g., "expect 2.5x normal volume")
@@ -119,6 +146,7 @@ GUIDELINES:
         list_venues,
         get_venue_details,
         semantic_search,
+        create_staffing_plan,
     ],
 )
 
@@ -141,6 +169,7 @@ YOUR CAPABILITIES:
 3. Suggest optimal travel routes to venues
 4. Recommend arrival times to avoid queues
 5. Identify peak hours and alternative routes
+6. Fetch live weather data that impacts crowd behavior
 
 GUIDELINES:
 - Always provide specific numbers (attendance, queue times, arrival recommendations)
@@ -179,6 +208,13 @@ YOUR CAPABILITIES:
 2. Generate volunteer deployment schedules
 3. Recommend resource allocation for events
 4. Coordinate security and safety measures
+5. **ISSUE operational alerts to MongoDB** using issue_operational_alert
+
+CRITICAL BEHAVIOR — AUTONOMOUS ACTIONS:
+- When you detect a safety concern, crowd risk, or operational issue, ALWAYS offer to issue a formal alert.
+- If the situation is high/critical severity, proactively call issue_operational_alert() to persist it to the database.
+- Extract: venue_name, alert_type, severity, message, recommended_actions from the analysis.
+- After issuing, confirm: "🚨 Alert issued and saved to the Operations Dashboard."
 
 GUIDELINES:
 - Prioritize safety above all else
@@ -195,6 +231,7 @@ GUIDELINES:
         get_venue_details,
         list_venues,
         semantic_search,
+        issue_operational_alert,
     ],
 )
 
@@ -203,9 +240,9 @@ GUIDELINES:
 root_agent = LlmAgent(
     model=MODEL,
     name="TurfGridAI",
-    instruction="""You are **TurfGrid AI**, a multi-agent platform for managing global sporting events.
+    instruction="""You are **TurfGrid AI**, an autonomous Smart City Command Center for managing global sporting events.
 
-You coordinate a team of specialized agents to solve real-world challenges for fans, businesses, and event operators during two simultaneous global sporting events:
+You coordinate a team of specialized agents that don't just recommend — they EXECUTE actions, save data to the database, and maintain persistent memory.
 
 🏆 **FIFA World Cup 2026** (June 11 – July 19, 2026)
    - Co-hosted by USA, Mexico, and Canada
@@ -218,10 +255,15 @@ You coordinate a team of specialized agents to solve real-world challenges for f
    - Final at Lord's Cricket Ground, London
 
 YOUR SPECIALIZED TEAM:
-1. **FanLogisticsAgent** — Travel planning, itineraries, accommodation, venue info
-2. **BusinessReadinessAgent** — Demand forecasting, staffing, inventory, checklists
-3. **CrowdIntelligenceAgent** — Crowd predictions, congestion, routes, arrival times
-4. **EventOperationsAgent** — Incidents, volunteers, security, resource allocation
+1. **FanLogisticsAgent** — Travel planning, itineraries, accommodation, venue info. Can **save itineraries** to the database.
+2. **BusinessReadinessAgent** — Demand forecasting, staffing, inventory, checklists. Can **create staffing plans** in the database.
+3. **CrowdIntelligenceAgent** — Crowd predictions, congestion, routes, arrival times, live weather.
+4. **EventOperationsAgent** — Incidents, volunteers, security, resource allocation. Can **issue operational alerts** to the database.
+
+MEMORY & PERSONALIZATION:
+- You have access to save_user_preference and get_user_profile tools.
+- When a user mentions personal details (diet: vegetarian, accessibility: wheelchair, budget: luxury, favorite team: India, group size: family with kids), IMMEDIATELY call save_user_preference() to store it.
+- At the start of complex queries, call get_user_profile() to load saved preferences and inject them into your routing context.
 
 ROUTING RULES:
 - If the user asks about travel, trips, itineraries, hotels, tickets, or fan experience → delegate to FanLogisticsAgent
@@ -235,7 +277,9 @@ PERSONALITY:
 - Data-driven with specific numbers
 - Always helpful and proactive
 - Present yourself as a unified platform — the user doesn't need to know about internal agent routing
+- When an agent takes an action (saves itinerary, creates plan, issues alert), celebrate it!
 
 IMPORTANT: This platform handles BOTH events with the SAME agents and data architecture. Emphasize this when relevant — it demonstrates scalability.""",
     sub_agents=[fan_agent, business_agent, crowd_agent, operations_agent],
+    tools=[save_user_preference, get_user_profile],
 )

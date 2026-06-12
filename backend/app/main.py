@@ -76,6 +76,7 @@ class ChatResponse(BaseModel):
     response: str
     session_id: str
     agent_used: str = ""
+    agent_steps: list = []
 
 
 # ─── Agent Runner ─────────────────────────────────────────────────────────────
@@ -110,6 +111,7 @@ async def run_agent(message: str, session_id: str) -> dict:
 
         response_text = ""
         agent_name = ""
+        agent_steps = []
 
         async for event in runner.run_async(
             user_id=session.user_id,
@@ -120,13 +122,33 @@ async def run_agent(message: str, session_id: str) -> dict:
                 for part in event.content.parts:
                     if part.text:
                         response_text += part.text
+                    # Capture tool calls for transparency
+                    if hasattr(part, 'function_call') and part.function_call:
+                        agent_steps.append({
+                            "agent": event.author if hasattr(event, 'author') and event.author else "Agent",
+                            "action": f"Calling {part.function_call.name}()",
+                            "status": "done"
+                        })
+                    if hasattr(part, 'function_response') and part.function_response:
+                        agent_steps.append({
+                            "agent": event.author if hasattr(event, 'author') and event.author else "Agent",
+                            "action": f"Tool returned results",
+                            "status": "done"
+                        })
             if hasattr(event, 'author') and event.author:
+                if event.author != agent_name:
+                    agent_steps.append({
+                        "agent": event.author,
+                        "action": f"Activated",
+                        "status": "done"
+                    })
                 agent_name = event.author
 
         return {
             "response": response_text or "I'm processing your request. Could you provide more details?",
             "session_id": session_id or session.id,
-            "agent_used": agent_name
+            "agent_used": agent_name,
+            "agent_steps": agent_steps
         }
 
     except ImportError as e:
@@ -237,10 +259,17 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
             contents=full_prompt
         )
 
+        # Build synthetic agent steps for fallback mode
+        fallback_steps = [{"agent": "TurfGridAI", "action": "Orchestrator activated", "status": "done"}]
+        if tool_context:
+            fallback_steps.append({"agent": "TurfGridAI", "action": "Data tools queried", "status": "done"})
+        fallback_steps.append({"agent": "TurfGridAI", "action": "Response generated", "status": "done"})
+
         return {
             "response": response.text,
             "session_id": session_id or str(uuid.uuid4())[:8],
-            "agent_used": "TurfGridAI (direct)"
+            "agent_used": "TurfGridAI (direct)",
+            "agent_steps": fallback_steps
         }
 
     except Exception as e:
@@ -269,7 +298,12 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                     return {
                         "response": chat_completion.choices[0].message.content,
                         "session_id": session_id or str(uuid.uuid4())[:8],
-                        "agent_used": "TurfGridAI (Groq Failover - Llama3)"
+                        "agent_used": "TurfGridAI (Groq Failover - Llama3)",
+                        "agent_steps": [
+                            {"agent": "TurfGridAI", "action": "Gemini 2.5 Flash unavailable (429)", "status": "warning"},
+                            {"agent": "TurfGridAI", "action": "Failover to Groq Llama-3", "status": "done"},
+                            {"agent": "TurfGridAI", "action": "Response generated via Groq", "status": "done"}
+                        ]
                     }
                 except Exception as groq_err:
                     return {
@@ -441,3 +475,65 @@ async def api_get_distance(origin: str, venue_id: str):
     """Get live travel distance to a venue."""
     from app.tools.fan_tools import calculate_live_travel_time
     return calculate_live_travel_time(origin=origin, venue_id=venue_id)
+
+
+# ─── v2.0: State-Altering Data Routes ────────────────────────────────────────
+
+@app.get("/api/itineraries")
+async def get_itineraries():
+    """Get all saved fan itineraries."""
+    if db is None:
+        return {"itineraries": [], "count": 0}
+    try:
+        cursor = db["user_itineraries"].find().sort("created_at", -1).limit(50)
+        results = await cursor.to_list(length=50)
+        for r in results:
+            r["_id"] = str(r["_id"])
+        return {"itineraries": results, "count": len(results)}
+    except Exception as e:
+        return {"itineraries": [], "count": 0, "error": str(e)}
+
+
+@app.get("/api/staffing-plans")
+async def get_staffing_plans():
+    """Get all active staffing plans."""
+    if db is None:
+        return {"plans": [], "count": 0}
+    try:
+        cursor = db["staffing_plans"].find().sort("created_at", -1).limit(50)
+        results = await cursor.to_list(length=50)
+        for r in results:
+            r["_id"] = str(r["_id"])
+        return {"plans": results, "count": len(results)}
+    except Exception as e:
+        return {"plans": [], "count": 0, "error": str(e)}
+
+
+@app.get("/api/alerts")
+async def get_alerts():
+    """Get all operational alerts."""
+    if db is None:
+        return {"alerts": [], "count": 0}
+    try:
+        cursor = db["operational_alerts"].find().sort("created_at", -1).limit(50)
+        results = await cursor.to_list(length=50)
+        for r in results:
+            r["_id"] = str(r["_id"])
+        return {"alerts": results, "count": len(results)}
+    except Exception as e:
+        return {"alerts": [], "count": 0, "error": str(e)}
+
+
+@app.get("/api/user-profile/{user_id}")
+async def get_user_profile_route(user_id: str):
+    """Get a user's stored preferences."""
+    if db is None:
+        return {"preferences": {}, "status": "no_db"}
+    try:
+        profile = await db["user_profiles"].find_one({"_id": user_id})
+        if profile:
+            profile["_id"] = str(profile["_id"])
+            return profile
+        return {"preferences": {}, "status": "new_user"}
+    except Exception as e:
+        return {"preferences": {}, "error": str(e)}
