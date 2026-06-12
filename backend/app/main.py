@@ -347,21 +347,31 @@ async def root():
 async def health():
     """Detailed health check."""
     mongo_status = "connected"
+    error_msg = None
     if db is not None:
         try:
             await mongo_client.admin.command("ping")
-        except Exception:
+        except Exception as e:
             mongo_status = "disconnected"
+            error_msg = str(e)
     else:
-        # Differentiate between "env var not set" and "connection failed"
+        # Check if it failed during startup lifespan
         if settings.MONGODB_URI and "localhost" not in settings.MONGODB_URI:
             mongo_status = "connection_failed"
+            try:
+                # Attempt to ping right now to catch the exact error
+                temp_client = AsyncIOMotorClient(settings.MONGODB_URI, serverSelectionTimeoutMS=2000)
+                await temp_client.admin.command("ping")
+                mongo_status = "connected_now"
+            except Exception as e:
+                error_msg = str(e)
         else:
             mongo_status = "not_configured"
 
     return {
         "status": "healthy",
         "mongodb": mongo_status,
+        "mongodb_error": error_msg,
         "mongodb_uri_set": bool(settings.MONGODB_URI and "localhost" not in settings.MONGODB_URI),
         "gemini_configured": bool(settings.GOOGLE_API_KEY),
     }
