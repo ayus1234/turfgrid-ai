@@ -212,7 +212,7 @@ async def issue_operational_alert(
         except pymongo.errors.DuplicateKeyError:
             return {
                 "status": "error",
-                "message": f"An active {severity} alert for {venue_name} already exists. Please wait for it to expire or check the dashboard."
+                "message": f"An active {alert_type} alert for {venue_name} already exists. Please wait for it to expire or check the dashboard."
             }
         
         # Fire background notifications for high/critical alerts

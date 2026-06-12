@@ -35,9 +35,16 @@ async def lifespan(app: FastAPI):
         await mongo_client.admin.command("ping")
         print("[OK] Connected to MongoDB Atlas")
         
-        # Create unique compound index for alerts to prevent duplicates
+        # Drop the old incorrect index if it exists
+        try:
+            await db["operational_alerts"].drop_index("venue_name_1_severity_1")
+            print("[OK] Dropped incorrect severity index")
+        except Exception:
+            pass
+
+        # Create unique compound index for alerts to prevent duplicates of the same type
         await db["operational_alerts"].create_index(
-            [("venue_name", 1), ("severity", 1)],
+            [("venue_name", 1), ("alert_type", 1)],
             unique=True
         )
         # Create TTL index to expire alerts after 24 hours (86400 seconds)
