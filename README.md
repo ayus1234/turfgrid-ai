@@ -59,6 +59,7 @@ We recently transformed the project into a true startup-grade application:
 - **Real Notifications System:** Critical operational alerts now trigger background asynchronous tasks that dispatch simulated SMS, Email, and Webhook notifications.
 - **Historical Analytics (/analytics):** A dedicated analytics portal powered by pure MongoDB `$group` and `$sum` aggregation pipelines to visualize alert frequencies, staffing impact, and fan destinations.
 - **Agent-to-Agent Workflows:** True multi-agent collaboration! When the Fan Agent saves an itinerary, the backend automatically spins up the Business Readiness Agent in the background to autonomously generate a staffing plan for the venue, anticipating demand without user input.
+- **Database-Level Agent Guardrails:** To prevent agents from spamming duplicate alerts, MongoDB actively enforces state using a **Unique Compound Index** on `[venue_name, severity]` and a **TTL (Time-To-Live) Index** on `expires_at`. The database will outright reject duplicate active alerts and handle expiration automatically.
 
 ---
 
@@ -138,7 +139,7 @@ graph TD
     %% State-Altering Actions (v3.0)
     FL -->|save_itinerary| DB_ITN[("user_itineraries<br/>MongoDB")]
     BR -->|create_staffing_plan| DB_STP[("staffing_plans<br/>MongoDB")]
-    EO -->|issue_operational_alert| DB_ALT[("operational_alerts<br/>MongoDB")]
+    EO -->|issue_operational_alert| DB_ALT[("operational_alerts<br/>MongoDB<br/>Unique Compound + TTL Index")]
 
     %% v3.0 Agent-to-Agent Workflows & Notifications
     DB_ITN -.->|Background Trigger| BR
