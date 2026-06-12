@@ -64,13 +64,13 @@ export default function AnalyticsPage() {
           onChange={(e) => setSelectedCity(e.target.value)}
           style={{ background: "var(--bg-glass)", border: "1px solid var(--border-glass)", color: "var(--text-primary)", padding: "8px 16px", borderRadius: 8, fontSize: "1rem" }}
         >
-          <option value="Global">🌍 Global View</option>
-          <option value="London">🇬🇧 London</option>
-          <option value="Birmingham">🇬🇧 Birmingham</option>
-          <option value="Manchester">🇬🇧 Manchester</option>
-          <option value="New York">🇺🇸 New York</option>
-          <option value="Los Angeles">🇺🇸 Los Angeles</option>
-          <option value="Mexico City">🇲🇽 Mexico City</option>
+          <option value="Global" style={{ background: "#0f172a", color: "white" }}>🌍 Global View</option>
+          <option value="London" style={{ background: "#0f172a", color: "white" }}>🇬🇧 London</option>
+          <option value="Birmingham" style={{ background: "#0f172a", color: "white" }}>🇬🇧 Birmingham</option>
+          <option value="Manchester" style={{ background: "#0f172a", color: "white" }}>🇬🇧 Manchester</option>
+          <option value="New York" style={{ background: "#0f172a", color: "white" }}>🇺🇸 New York</option>
+          <option value="Los Angeles" style={{ background: "#0f172a", color: "white" }}>🇺🇸 Los Angeles</option>
+          <option value="Mexico City" style={{ background: "#0f172a", color: "white" }}>🇲🇽 Mexico City</option>
         </select>
       </div>
 
