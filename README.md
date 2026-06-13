@@ -25,6 +25,20 @@
 <br/>
 
 <div align="center">
+  <img src="assets/venues.png" alt="Venues Directory" width="800"/>
+  <p><em>Comprehensive Global Venues Directory with Transport Links</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/matches.png" alt="Key Matches" width="800"/>
+  <p><em>Key Tournament Matches and Booking Integrations</em></p>
+</div>
+
+<br/>
+
+<div align="center">
   <img src="assets/dashboard.png" alt="Operations Dashboard" width="800"/>
   <p><em>Real-Time Operations Dashboard with City Filtering</em></p>
 </div>
