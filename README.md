@@ -17,8 +17,6 @@
 
 ## 📸 Application Showcase
 
-> **Developer Note:** Please create an `assets/` folder in your project root and save your 11 favorite screenshots from our chat with the filenames below so they render perfectly on GitHub!
-
 <div align="center">
   <img src="assets/home.png" alt="Main Landing Page" width="800"/>
   <p><em>TurfGrid AI Main Landing Page & Event Explorer</em></p>
