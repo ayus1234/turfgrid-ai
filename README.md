@@ -221,7 +221,7 @@ To guarantee the highest level of product maturity and strict adherence to the h
 ```mermaid
 graph TD
     %% User Interaction
-    U["User Interaction<br/>Next.js UI"] -->|Chat Query / UI Click| O
+    U["User Interaction Next.js UI"] -->|Chat Query / UI Click| O
     
     %% Orchestrator & High Availability
     subgraph "High Availability LLM Router"
@@ -232,7 +232,7 @@ graph TD
     end
 
     %% User Memory
-    O -->|Load/Save Preferences| MEM[("User Profiles<br/>MongoDB")]
+    O -->|Load/Save Preferences| MEM[("User Profiles MongoDB")]
 
     %% Specialized Agents
     G -->|Delegates| SA
@@ -247,18 +247,18 @@ graph TD
     end
 
     %% State-Altering Actions (v3.0)
-    FL -->|save_itinerary| DB_ITN[("user_itineraries<br/>MongoDB")]
-    BR -->|create_staffing_plan| DB_STP[("staffing_plans<br/>MongoDB")]
-    EO -->|issue_operational_alert| DB_ALT[("operational_alerts<br/>MongoDB<br/>Unique Compound + TTL Index")]
+    FL -->|save_itinerary| DB_ITN[("user_itineraries MongoDB")]
+    BR -->|create_staffing_plan| DB_STP[("staffing_plans MongoDB")]
+    EO -->|issue_operational_alert| DB_ALT[("operational_alerts MongoDB Unique Compound + TTL Index")]
 
     %% v5.0 Agent-to-Agent Workflows & Notifications
-    DB_ITN -.->|Background Trigger| DB_WF[("agent_workflows<br/>MongoDB")]
+    DB_ITN -.->|Background Trigger| DB_WF[("agent_workflows MongoDB")]
     DB_WF -.->|Background Trigger| BR
-    DB_ALT -.->|Dispatch| DB_NOTIFY[("notification_logs<br/>MongoDB")]
-    DB_NOTIFY -.->|Mock Dispatch| NOTIFY[["Notification Service<br/>(SMS, Email, Webhooks)"]]
+    DB_ALT -.->|Dispatch| DB_NOTIFY[("notification_logs MongoDB")]
+    DB_NOTIFY -.->|Mock Dispatch| NOTIFY[["Notification Service (SMS, Email, Webhooks)"]]
     
     %% FastMCP Server
-    MCP_CLIENT(("Any MCP Client<br/>(Claude Desktop, etc)")) -.->|JSON-RPC over stdio| MCP_SERVER["FastMCP Server<br/>(mcp_server.py)"]
+    MCP_CLIENT(("Any MCP Client (Claude Desktop, etc)")) -.->|JSON-RPC over stdio| MCP_SERVER["FastMCP Server (mcp_server.py)"]
     MCP_SERVER -.->|Exposes tools| SA
 
     %% External APIs & Tools
@@ -267,15 +267,15 @@ graph TD
     CI -->|Live Atmospheric| T3(("OpenWeatherMap API"))
 
     %% Database — Read Path
-    SA -->|"Read / Semantic Vector Search"| DB[("MongoDB Atlas<br/>w/ Vector Search")]
+    SA -->|"Read / Semantic Vector Search"| DB[("MongoDB Atlas w/ Vector Search")]
 
     %% Dashboard reads persisted state
-    DASH["Operations Dashboard<br/>Next.js"] -->|Polls every 30s| DB_ITN
+    DASH["Operations Dashboard Next.js"] -->|Polls every 30s| DB_ITN
     DASH -->|Polls every 30s| DB_STP
     DASH -->|Polls every 30s| DB_ALT
     
     %% Analytics
-    ANALYTICS["Analytics Dashboard<br/>Recharts UI"] -->|MongoDB `$or` & `$regex` Aggregation| DB_ITN
+    ANALYTICS["Analytics Dashboard Recharts UI"] -->|MongoDB $or & $regex Aggregation| DB_ITN
     ANALYTICS -->|MongoDB Aggregation| DB_STP
     ANALYTICS -->|MongoDB Aggregation| DB_ALT
     
