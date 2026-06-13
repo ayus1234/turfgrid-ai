@@ -17,7 +17,7 @@
 
 ## 🎯 What is TurfGrid AI?
 
-TurfGrid AI is an autonomous **Smart City Command Center** that manages the complex logistics of large-scale sporting events. When 80,000 fans descend on a city, local infrastructure breaks — restaurants run out of inventory, roads congest, and security is overwhelmed. Our agents don't just recommend — they **execute actions**, save data to MongoDB, and maintain persistent user memory. Demonstrated with two real events happening simultaneously in 2026:
+TurfGrid AI is an autonomous **Smart City Command Center** that manages the complex logistics of large-scale sporting events. When 80,000 fans descend on a city, local infrastructure breaks — restaurants run out of inventory, roads congest, and security is overwhelmed. Our agents don't just recommend — they **execute actions**, autonomously book end-to-end travel (flights, hotels, and official tickets), save data to MongoDB, and maintain persistent user memory. Demonstrated with two real events happening simultaneously in 2026:
 
 | Event | Dates | Location | Teams | Venues |
 |-------|-------|----------|-------|--------|
