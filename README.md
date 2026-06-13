@@ -65,7 +65,7 @@ The final milestone focused on extreme reliability and high-fidelity UX:
 - **Interactive Analytics Dashboard:** Upgraded historical analytics to use premium, dynamic `recharts` Pie and Donut visualizations with blurred glassmorphism tooltips. Fully supported by robust MongoDB `$or` and `$regex` queries to securely filter cross-tenant data.
 - **Complete Booking Suite:** The platform now deep-links directly to official FIFA and ICC ticket portals, alongside fully integrated live Kayak and Booking.com URL generation for autonomous travel planning. It also features a dynamic NLP IATA code mapper, ensuring that when a fan types "Delhi" or "New York", it accurately routes to "DEL" or "JFK" for real-world flight accuracy.
 - **Advanced Groq Failover Loop:** The high-availability Llama-3 backup agent no longer just executes tools blindly; it properly completes the multi-turn function-calling loop by injecting tool results back into the conversation context to provide a seamless, natural response identical to Gemini.
-- **Intelligent Context Routing:** Agents exhibit "common sense" (e.g. knowing "India vs Pakistan" strictly means ICC Women's T20 and automatically bypassing redundant clarification questions) via optimized system prompts and dynamic keyword extraction.
+- **Intelligent Context Routing:** The Root Orchestrator has been fine-tuned to exhibit "common sense" (e.g. knowing "India vs Pakistan" strictly means ICC Women's T20 and automatically bypassing redundant clarification questions) via optimized system prompts and dynamic keyword extraction. It also features expanded routing rules, seamlessly delegating queries about "stadiums" and "venues" to the Fan Agent so that MongoDB Vector Search is always utilized.
 
 ---
 

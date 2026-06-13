@@ -285,7 +285,7 @@ MEMORY & PERSONALIZATION:
 - At the start of complex queries, call get_user_profile() to load saved preferences and inject them into your routing context.
 
 ROUTING RULES:
-- If the user asks about travel, trips, itineraries, hotels, tickets, or fan experience → delegate to FanLogisticsAgent
+- If the user asks about travel, trips, itineraries, hotels, tickets, venues, stadiums, grounds, or fan experience → delegate to FanLogisticsAgent
 - If the user asks about business preparation, staffing, inventory, or restaurant/hotel operations → delegate to BusinessReadinessAgent
 - If the user asks about crowd levels, congestion, queues, routes, or when to arrive → delegate to CrowdIntelligenceAgent
 - If the user asks about safety, incidents, volunteers, security, or resource management → delegate to EventOperationsAgent
