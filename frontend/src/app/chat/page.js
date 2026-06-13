@@ -19,11 +19,43 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState("");
+  const [workflows, setWorkflows] = useState([]);
+  const [shownWorkflowIds, setShownWorkflowIds] = useState(new Set());
   const messagesEnd = useRef(null);
 
   useEffect(() => {
     setSessionId("s_" + Math.random().toString(36).slice(2, 10));
-  }, []);
+    
+    // Poll for background workflows
+    const interval = setInterval(() => {
+      fetch(`${API_URL}/api/workflows`)
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.workflows && d.workflows.length > 0) {
+            setWorkflows((prev) => {
+              const newWorkflows = d.workflows.filter(w => !shownWorkflowIds.has(w._id));
+              if (newWorkflows.length > 0) {
+                setShownWorkflowIds(new Set([...shownWorkflowIds, ...newWorkflows.map(w => w._id)]));
+                return [...prev, ...newWorkflows].slice(-3); // Keep max 3 toasts
+              }
+              return prev;
+            });
+          }
+        })
+        .catch(() => {});
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [shownWorkflowIds]);
+
+  // Auto-dismiss workflow toasts after 8 seconds
+  useEffect(() => {
+    if (workflows.length > 0) {
+      const timer = setTimeout(() => {
+        setWorkflows(prev => prev.slice(1));
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [workflows]);
 
   useEffect(() => {
     messagesEnd.current?.scrollIntoView({ behavior: "smooth" });
@@ -185,6 +217,21 @@ export default function ChatPage() {
           )}
 
           <div ref={messagesEnd} />
+        </div>
+
+        {/* Workflow Toasts */}
+        <div style={{ position: "absolute", bottom: 100, right: 32, display: "flex", flexDirection: "column", gap: 12, zIndex: 50 }}>
+          {workflows.map((w, i) => (
+            <div key={i} className="glass-strong" style={{ padding: "12px 16px", borderLeft: "4px solid var(--accent-amber)", animation: "slideIn 0.3s ease-out", maxWidth: 350, boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}>
+              <div style={{ fontWeight: 700, fontSize: "0.85rem", color: "var(--accent-amber)", marginBottom: 4 }}>
+                ⚙️ Background System Workflow
+              </div>
+              <div style={{ fontSize: "0.9rem" }}>{w.message}</div>
+              <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 6, textAlign: "right" }}>
+                {w.event} • {new Date(w.timestamp).toLocaleTimeString()}
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="chat-input-area">

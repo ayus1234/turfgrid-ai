@@ -153,7 +153,15 @@ async def run_agent(message: str, session_id: str) -> dict:
                         # --- MULTI-AGENT WORKFLOW TRIGGER ---
                         if func_name == "save_itinerary":
                             import asyncio
+                            from datetime import datetime
                             print("[WORKFLOW] save_itinerary detected. Triggering Business Agent in background.")
+                            if db is not None:
+                                await db["agent_workflows"].insert_one({
+                                    "event": "save_itinerary",
+                                    "message": "Business Agent Triggered -> Staffing Plan generating in background",
+                                    "timestamp": datetime.now().isoformat(),
+                                    "status": "success"
+                                })
                             asyncio.create_task(run_agent(
                                 "A new fan itinerary was just saved. Automatically generate a staffing plan for a cafe near the venue. Assume normal staff is 4.", 
                                 "system_workflow_bot"
@@ -453,7 +461,15 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                                     result = await save_itinerary(**args)
                                     # --- MULTI-AGENT WORKFLOW TRIGGER (Fallback) ---
                                     import asyncio
+                                    from datetime import datetime
                                     print("[WORKFLOW] save_itinerary detected in Fallback. Triggering Business Agent in background.")
+                                    if db is not None:
+                                        await db["agent_workflows"].insert_one({
+                                            "event": "save_itinerary",
+                                            "message": "Business Agent Triggered -> Staffing Plan generating in background",
+                                            "timestamp": datetime.now().isoformat(),
+                                            "status": "success"
+                                        })
                                     asyncio.create_task(run_fallback_agent(
                                         "A new fan itinerary was just saved. Automatically generate a staffing plan for a cafe near the venue. Assume normal staff is 4.", 
                                         "system_workflow_bot"
@@ -823,10 +839,23 @@ async def get_analytics(city: str = None):
         itinerary_cursor = db["user_itineraries"].aggregate(itinerary_pipeline)
         popular_destinations = await itinerary_cursor.to_list(length=10)
 
+        # 4. KPIs
+        total_alerts = await db["operational_alerts"].count_documents(alerts_match["$match"])
+        total_staffing = await db["staffing_plans"].count_documents(staff_match["$match"])
+        total_itineraries = await db["user_itineraries"].count_documents(itin_match["$match"])
+        
+        kpis = {
+            "active_alerts": total_alerts,
+            "staffing_plans": total_staffing,
+            "itineraries_saved": total_itineraries,
+            "cities_monitored": 5 if (not city or city == "Global") else 1
+        }
+
         return {
             "alerts_by_venue": [{"venue": r["_id"], "count": r["count"]} for r in alerts_by_venue if r["_id"]],
             "staffing_impact": [{"type": r["_id"], "extra_staff": r["total_extra_staff"]} for r in staffing_impact if r["_id"]],
-            "popular_destinations": [{"city": r["_id"], "count": r["count"]} for r in popular_destinations if r["_id"]]
+            "popular_destinations": [{"city": r["_id"], "count": r["count"]} for r in popular_destinations if r["_id"]],
+            "kpis": kpis
         }
     except Exception as e:
         return {"error": str(e)}
@@ -845,3 +874,49 @@ async def get_user_profile_route(user_id: str):
         return {"preferences": {}, "status": "new_user"}
     except Exception as e:
         return {"preferences": {}, "error": str(e)}
+
+@app.put("/api/alerts/{alert_id}/acknowledge")
+async def acknowledge_alert(alert_id: str):
+    """Acknowledge an operational alert."""
+    if db is None:
+        return JSONResponse(status_code=500, content={"error": "Database unavailable"})
+    try:
+        result = await db["operational_alerts"].update_one(
+            {"_id": alert_id},
+            {"$set": {"acknowledged": True, "status": "resolved"}}
+        )
+        if result.modified_count > 0:
+            return {"status": "success", "message": f"Alert {alert_id} acknowledged."}
+        return JSONResponse(status_code=404, content={"error": "Alert not found"})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.get("/api/workflows")
+async def get_workflows():
+    """Get recent agent workflows/logs."""
+    if db is None:
+        return {"workflows": []}
+    try:
+        # Assuming workflow logs are stored in a new collection, if empty we just return mock or empty
+        # Wait, we need to actually write them. But for now return from agent_workflows collection
+        cursor = db["agent_workflows"].find({}).sort("timestamp", -1).limit(20)
+        results = await cursor.to_list(length=20)
+        for r in results:
+            r["_id"] = str(r["_id"])
+        return {"workflows": results}
+    except Exception as e:
+        return {"error": str(e), "workflows": []}
+
+@app.get("/api/notifications")
+async def get_notifications():
+    """Get recent notifications dispatched."""
+    if db is None:
+        return {"notifications": []}
+    try:
+        cursor = db["notification_logs"].find({}).sort("timestamp", -1).limit(20)
+        results = await cursor.to_list(length=20)
+        for r in results:
+            r["_id"] = str(r["_id"])
+        return {"notifications": results}
+    except Exception as e:
+        return {"error": str(e), "notifications": []}

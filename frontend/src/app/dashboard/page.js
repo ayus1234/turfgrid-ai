@@ -8,6 +8,7 @@ export default function DashboardPage() {
   const [alerts, setAlerts] = useState([]);
   const [itineraries, setItineraries] = useState([]);
   const [staffingPlans, setStaffingPlans] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [lastRefresh, setLastRefresh] = useState(null);
   const [selectedCity, setSelectedCity] = useState("Global");
 
@@ -34,7 +35,21 @@ export default function DashboardPage() {
       .then((d) => setStaffingPlans(d.plans || []))
       .catch(() => {});
 
+    fetch(`${API_URL}/api/notifications`)
+      .then((r) => r.json())
+      .then((d) => setNotifications(d.notifications || []))
+      .catch(() => {});
+
     setLastRefresh(new Date().toLocaleTimeString());
+  };
+
+  const acknowledgeAlert = async (alertId) => {
+    try {
+      await fetch(`${API_URL}/api/alerts/${alertId}/acknowledge`, { method: "PUT" });
+      fetchLiveData();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {
@@ -151,8 +166,20 @@ export default function DashboardPage() {
                   Actions: {a.recommended_actions.join(", ")}
                 </div>
               )}
-              <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 8 }}>
-                {a.created_at ? new Date(a.created_at).toLocaleString() : ""}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+                <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                  {a.created_at ? new Date(a.created_at).toLocaleString() : ""}
+                </div>
+                {!a.acknowledged ? (
+                  <button 
+                    onClick={() => acknowledgeAlert(a._id)}
+                    style={{ background: "rgba(16,185,129,0.15)", color: "var(--accent-emerald)", border: "1px solid var(--accent-emerald)", padding: "4px 12px", borderRadius: 4, fontSize: "0.75rem", cursor: "pointer", fontWeight: 600 }}
+                  >
+                    Acknowledge
+                  </button>
+                ) : (
+                  <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>✅ Acknowledged</span>
+                )}
               </div>
             </div>
           ))}
@@ -235,11 +262,43 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Notification Logs */}
+      <h2 style={{ fontSize: "1.3rem", fontWeight: 700, marginBottom: 16 }}>
+        📨 Real-Time Notification Logs
+      </h2>
+      {notifications.length === 0 ? (
+        <div className="glass" style={{ padding: 24, textAlign: "center", marginBottom: 40, color: "var(--text-muted)" }}>
+          <p>No notifications dispatched recently.</p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 40 }}>
+          {notifications.map((n, i) => (
+            <div key={i} className="glass" style={{ padding: 16, display: "flex", justifyContent: "space-between", alignItems: "center", borderLeft: `4px solid ${n.type === "SMS" ? "var(--accent-emerald)" : n.type === "Email" ? "var(--accent-blue)" : "var(--accent-purple)"}` }}>
+              <div>
+                <div style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+                  <span>{n.type === "SMS" ? "📱" : n.type === "Email" ? "📧" : "🔗"} {n.type}</span>
+                  <span style={{ fontSize: "0.75rem", padding: "2px 8px", borderRadius: 100, background: "rgba(16,185,129,0.15)", color: "var(--accent-emerald)" }}>✅ {n.status}</span>
+                </div>
+                <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: 4 }}>
+                  <span style={{ color: "var(--text-primary)" }}>To:</span> {n.recipient}
+                </div>
+                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginTop: 4 }}>
+                  {n.subject}
+                </div>
+              </div>
+              <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", textAlign: "right" }}>
+                {new Date(n.timestamp).toLocaleTimeString()}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Tech Stack */}
       <div className="glass-strong" style={{ padding: 32, marginTop: 40, textAlign: "center" }}>
         <h3 style={{ marginBottom: 16, fontWeight: 700 }}>Tech Stack</h3>
         <div style={{ display: "flex", gap: 24, justifyContent: "center", flexWrap: "wrap", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-          {["Gemini 2.5 Flash", "Google ADK 2.0", "MongoDB Atlas", "FastAPI", "Next.js", "Groq Llama-3 (Failover)"].map((t, i) => (
+          {["Gemini 2.5 Flash", "Google ADK 2.0", "MongoDB Atlas", "FastAPI", "Next.js", "Groq Llama-3 (Failover)", "FastMCP Integration"].map((t, i) => (
             <span key={i} className="event-tag">{t}</span>
           ))}
         </div>

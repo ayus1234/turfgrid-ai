@@ -98,6 +98,28 @@ export default function AnalyticsPage() {
         </select>
       </div>
 
+      {/* KPI Cards */}
+      {!loading && data.kpis && (
+        <div className="stats-grid" style={{ marginBottom: 40 }}>
+          <div className="stat-card glass">
+            <div className="stat-value" style={{ color: "var(--accent-rose)" }}>{data.kpis.active_alerts}</div>
+            <div className="stat-label">Active Alerts</div>
+          </div>
+          <div className="stat-card glass">
+            <div className="stat-value" style={{ color: "var(--accent-emerald)" }}>{data.kpis.staffing_plans}</div>
+            <div className="stat-label">Staffing Plans</div>
+          </div>
+          <div className="stat-card glass">
+            <div className="stat-value" style={{ color: "var(--accent-blue)" }}>{data.kpis.itineraries_saved}</div>
+            <div className="stat-label">Saved Itineraries</div>
+          </div>
+          <div className="stat-card glass">
+            <div className="stat-value" style={{ color: "var(--accent-purple)" }}>{data.kpis.cities_monitored}</div>
+            <div className="stat-label">Cities Monitored</div>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div style={{ textAlign: "center", padding: 40, color: "var(--text-muted)" }}>
           <div className="skeleton skeleton-card" style={{ height: 350 }}></div>

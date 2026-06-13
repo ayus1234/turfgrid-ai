@@ -1,12 +1,30 @@
 import asyncio
 from datetime import datetime
+from app.database import db
 
 class NotificationService:
+    @staticmethod
+    async def log_notification(delivery_type: str, recipient: str, subject: str, body: str, status: str = "success"):
+        """Logs the notification dispatch to MongoDB for UI observability."""
+        try:
+            doc = {
+                "type": delivery_type,
+                "recipient": recipient,
+                "subject": subject,
+                "body": body,
+                "status": status,
+                "timestamp": datetime.now().isoformat()
+            }
+            await db.notification_logs.insert_one(doc)
+        except Exception as e:
+            print(f"Failed to log notification: {e}")
+
     @staticmethod
     async def send_sms_mock(phone_number: str, message: str):
         """Simulate sending an SMS."""
         print(f"[{datetime.now().isoformat()}] [SMS DISPATCHED] To: {phone_number} | Message: {message}")
         await asyncio.sleep(1) # Simulate network delay
+        await NotificationService.log_notification("SMS", phone_number, "Urgent Alert", message)
         return True
 
     @staticmethod
@@ -14,6 +32,7 @@ class NotificationService:
         """Simulate sending an email."""
         print(f"[{datetime.now().isoformat()}] [EMAIL DISPATCHED] To: {email_address} | Subject: {subject} | Body: {body}")
         await asyncio.sleep(1) # Simulate network delay
+        await NotificationService.log_notification("Email", email_address, subject, body)
         return True
 
     @staticmethod
@@ -21,6 +40,7 @@ class NotificationService:
         """Simulate triggering a webhook."""
         print(f"[{datetime.now().isoformat()}] [WEBHOOK TRIGGERED] URL: {url} | Payload: {payload}")
         await asyncio.sleep(1) # Simulate network delay
+        await NotificationService.log_notification("Webhook", url, "System Webhook", str(payload))
         return True
 
     @classmethod
@@ -28,7 +48,6 @@ class NotificationService:
         """Dispatches all notifications for a critical alert."""
         if severity.lower() in ["high", "critical"]:
             print(f"\n--- INITIATING CRITICAL ALERT NOTIFICATION SEQUENCE FOR {alert_id} ---")
-            # Run all notification tasks concurrently
             await asyncio.gather(
                 cls.send_sms_mock("+1-555-0199", f"URGENT: {severity.upper()} Alert at {venue}. {message}"),
                 cls.send_email_mock("operations@citygov.org", f"Operational Alert: {venue}", f"Severity: {severity}\n\nDetails: {message}"),

@@ -201,6 +201,7 @@ async def issue_operational_alert(
         "recommended_actions": [a.strip() for a in recommended_actions.split(",")] if recommended_actions else [],
         "status": "active",
         "city": city,
+        "acknowledged": False,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "expires_at": datetime.now(timezone.utc),  # BSON Date for TTL index
     }
