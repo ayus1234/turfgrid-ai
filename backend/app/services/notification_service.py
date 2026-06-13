@@ -1,7 +1,17 @@
 import asyncio
 from datetime import datetime
-from app.database import db
+from motor.motor_asyncio import AsyncIOMotorClient
+from app.config import settings
 
+_client = None
+_db = None
+
+def _get_db():
+    global _client, _db
+    if _db is None:
+        _client = AsyncIOMotorClient(settings.MONGODB_URI)
+        _db = _client[settings.MONGODB_DB]
+    return _db
 class NotificationService:
     @staticmethod
     async def log_notification(delivery_type: str, recipient: str, subject: str, body: str, status: str = "success"):
@@ -15,7 +25,7 @@ class NotificationService:
                 "status": status,
                 "timestamp": datetime.now().isoformat()
             }
-            await db.notification_logs.insert_one(doc)
+            await _get_db().notification_logs.insert_one(doc)
         except Exception as e:
             print(f"Failed to log notification: {e}")
 
