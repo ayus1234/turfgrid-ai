@@ -210,8 +210,45 @@ def _last_mile_info(venue_id: str, arrival_iata: str) -> Dict:
     # Fallback for venues without specific data
     return {"mode": "taxi", "estimate": "₹2,075‑₹3,320", "description": f"Taxi from {arrival_iata} to venue (~30-45 min)"}
 
+_CITY_TO_IATA = {
+    "delhi": "DEL",
+    "mumbai": "BOM",
+    "bangalore": "BLR",
+    "bengaluru": "BLR",
+    "chennai": "MAA",
+    "kolkata": "CCU",
+    "hyderabad": "HYD",
+    "ahmedabad": "AMD",
+    "pune": "PNQ",
+    "new york": "JFK",
+    "london": "LHR",
+    "los angeles": "LAX",
+    "paris": "CDG",
+    "tokyo": "HND",
+    "dubai": "DXB",
+    "singapore": "SIN",
+    "sydney": "SYD",
+    "toronto": "YYZ",
+    "mexico city": "MEX",
+    "atlanta": "ATL",
+    "dallas": "DFW",
+    "miami": "MIA",
+    "chicago": "ORD",
+    "houston": "IAH"
+}
+
+def _get_iata_for_city(city_name: str) -> str:
+    if not city_name or city_name.strip().lower() == "any":
+        return "ANY"
+    city_lower = city_name.strip().lower()
+    if city_lower in _CITY_TO_IATA:
+        return _CITY_TO_IATA[city_lower]
+    if len(city_lower) == 3:
+        return city_lower.upper()
+    return city_lower[:3].upper()
+
 def search_flights(source_city: str, venue_id: str, departure_date: str) -> Dict:
-    source_iata = "ANY"
+    source_iata = _get_iata_for_city(source_city)
     dest_iatas = _VENUE_AIRPORT_MAP.get(venue_id)
     if not dest_iatas:
         return {"error": f"No airport mapping for venue '{venue_id}'"}
