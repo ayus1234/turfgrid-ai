@@ -17,7 +17,7 @@
 
 ## 📸 Application Showcase
 
-> **Developer Note:** Please create an `assets/` folder in your project root and save your 9 favorite screenshots from our chat with the filenames below so they render perfectly on GitHub!
+> **Developer Note:** Please create an `assets/` folder in your project root and save your 11 favorite screenshots from our chat with the filenames below so they render perfectly on GitHub!
 
 <div align="center">
   <img src="assets/home.png" alt="Main Landing Page" width="800"/>
@@ -48,6 +48,13 @@
 <br/>
 
 <div align="center">
+  <img src="assets/tickets.png" alt="Match Tickets" width="800"/>
+  <p><em>Official Match Ticket Booking Redirection Portal</em></p>
+</div>
+
+<br/>
+
+<div align="center">
   <img src="assets/hotels.png" alt="Hotel Bookings" width="800"/>
   <p><em>Dynamic Hotel and Accommodation Booking Engine</em></p>
 </div>
@@ -57,6 +64,13 @@
 <div align="center">
   <img src="assets/flights.png" alt="Flight Itineraries" width="800"/>
   <p><em>End-to-End Flight Itinerary Generation with Pricing</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/weather.png" alt="Live Weather" width="800"/>
+  <p><em>Live Venue Weather Integration via OpenWeatherMap API</em></p>
 </div>
 
 <br/>
