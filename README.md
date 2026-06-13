@@ -39,7 +39,7 @@
 <br/>
 
 <div align="center">
-  <img src="assets/chat.png" alt="Agent Chat and LLM Failover" width="800"/>
+  <img src="assets/chat.png?v=2" alt="Agent Chat and LLM Failover" width="800"/>
   <p><em>Multi-Agent Chat UI demonstrating High-Availability Gemini to Groq Failover and Background Workflow Toasts</em></p>
 </div>
 
