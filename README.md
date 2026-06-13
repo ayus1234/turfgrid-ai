@@ -15,6 +15,45 @@
 
 ---
 
+## 📸 Application Showcase
+
+> **Developer Note:** Please create an `assets/` folder in your project root and save your 5 favorite screenshots from our chat with the filenames below so they render perfectly on GitHub!
+
+<div align="center">
+  <img src="assets/dashboard.png" alt="Operations Dashboard" width="800"/>
+  <p><em>Real-Time Operations Dashboard with City Filtering and Live Alerts</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/chat.png" alt="Agent Chat and LLM Failover" width="800"/>
+  <p><em>Multi-Agent Chat UI demonstrating High-Availability Gemini to Groq Failover and Background Workflow Toasts</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/analytics.png" alt="Historical Analytics" width="800"/>
+  <p><em>Historical Analytics powered by complex MongoDB Aggregation Pipelines</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/distance.png" alt="Distance Calculation" width="800"/>
+  <p><em>Live Distance Matrix Calculation routing fans directly to the venues</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/notifications.png" alt="Real-Time Notification Logs" width="800"/>
+  <p><em>Real-Time Webhook, Email, and SMS Notification Logs</em></p>
+</div>
+
+---
+
 ## 🎯 What is TurfGrid AI?
 
 TurfGrid AI is an autonomous **Smart City Command Center** that manages the complex logistics of large-scale sporting events. When 80,000 fans descend on a city, local infrastructure breaks — restaurants run out of inventory, roads congest, and security is overwhelmed. Our agents don't just recommend — they **execute actions**, autonomously book end-to-end travel (flights, hotels, and official tickets), save data to MongoDB, and maintain persistent user memory. Demonstrated with two real events happening simultaneously in 2026:
