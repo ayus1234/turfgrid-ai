@@ -97,10 +97,11 @@ To guarantee the highest level of product maturity and strict adherence to the h
  │   │   ├── 📂 services/         # Background services
  │   │   │   └── 📄 notification_service.py # Event-driven SMS/Email/Webhooks
  │   │   ├── 📄 config.py        # Environment & Configuration settings
- │   │   └── 📄 main.py          # API Routes + v4.0 state endpoints & workflows
+ │   │   ├── 📄 mcp_server.py    # [v5.0] MongoDB FastMCP Server Integration
+ │   │   └── 📄 main.py          # API Routes + v5.0 state endpoints & workflows
  │   ├── 📄 requirements.txt     # Python Dependencies
  │   ├── 📄 run_seed.py          # MongoDB Database Seeding Script
- │   ├── 📄 backfill_db.py       # [v4.0] MongoDB Migration Script for City Data
+ │   ├── 📄 backfill_db.py       # MongoDB Migration Script for City Data
  │   └── 📄 run.py               # Uvicorn Development Server Runner
  │
  ├── 📂 frontend/                # Next.js React Frontend
@@ -157,9 +158,15 @@ graph TD
     BR -->|create_staffing_plan| DB_STP[("staffing_plans<br/>MongoDB")]
     EO -->|issue_operational_alert| DB_ALT[("operational_alerts<br/>MongoDB<br/>Unique Compound + TTL Index")]
 
-    %% v3.0 Agent-to-Agent Workflows & Notifications
-    DB_ITN -.->|Background Trigger| BR
-    DB_ALT -.->|Dispatch| NOTIFY[["Notification Service<br/>(SMS, Email, Webhooks)"]]
+    %% v5.0 Agent-to-Agent Workflows & Notifications
+    DB_ITN -.->|Background Trigger| DB_WF[("agent_workflows<br/>MongoDB")]
+    DB_WF -.->|Background Trigger| BR
+    DB_ALT -.->|Dispatch| DB_NOTIFY[("notification_logs<br/>MongoDB")]
+    DB_NOTIFY -.->|Mock Dispatch| NOTIFY[["Notification Service<br/>(SMS, Email, Webhooks)"]]
+    
+    %% FastMCP Server
+    MCP_CLIENT(("Any MCP Client<br/>(Claude Desktop, etc)")) -.->|JSON-RPC over stdio| MCP_SERVER["FastMCP Server<br/>(mcp_server.py)"]
+    MCP_SERVER -.->|Exposes tools| SA
 
     %% External APIs & Tools
     FL -->|Live Booking Links| T1(("Kayak / Booking.com / FIFA / ICC Tickets"))
