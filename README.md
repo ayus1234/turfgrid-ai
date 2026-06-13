@@ -17,7 +17,7 @@
 
 ## 📸 Application Showcase
 
-> **Developer Note:** Please create an `assets/` folder in your project root and save your 6 favorite screenshots from our chat with the filenames below so they render perfectly on GitHub!
+> **Developer Note:** Please create an `assets/` folder in your project root and save your 9 favorite screenshots from our chat with the filenames below so they render perfectly on GitHub!
 
 <div align="center">
   <img src="assets/home.png" alt="Main Landing Page" width="800"/>
@@ -28,7 +28,14 @@
 
 <div align="center">
   <img src="assets/dashboard.png" alt="Operations Dashboard" width="800"/>
-  <p><em>Real-Time Operations Dashboard with City Filtering and Live Alerts</em></p>
+  <p><em>Real-Time Operations Dashboard with City Filtering</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/alerts.png" alt="Live Operational Alerts" width="800"/>
+  <p><em>Live Operational Alerts & Incident Response Management</em></p>
 </div>
 
 <br/>
@@ -36,6 +43,20 @@
 <div align="center">
   <img src="assets/chat.png" alt="Agent Chat and LLM Failover" width="800"/>
   <p><em>Multi-Agent Chat UI demonstrating High-Availability Gemini to Groq Failover and Background Workflow Toasts</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/hotels.png" alt="Hotel Bookings" width="800"/>
+  <p><em>Dynamic Hotel and Accommodation Booking Engine</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/flights.png" alt="Flight Itineraries" width="800"/>
+  <p><em>End-to-End Flight Itinerary Generation with Pricing</em></p>
 </div>
 
 <br/>
