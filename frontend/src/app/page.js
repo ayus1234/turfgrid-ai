@@ -3,6 +3,7 @@
 export default function Home() {
   const events = [
     {
+      id: "fifa_wc_2026",
       icon: "⚽",
       title: "FIFA World Cup 2026",
       dates: "June 11 — July 19, 2026",
@@ -11,6 +12,7 @@ export default function Home() {
       color: "#e11d48",
     },
     {
+      id: "icc_wt20_2026",
       icon: "🏏",
       title: "ICC Women's T20 World Cup 2026",
       dates: "June 12 — July 5, 2026",
@@ -56,7 +58,7 @@ export default function Home() {
         </p>
         <div className="events-grid">
           {events.map((e, i) => (
-            <div key={i} className="event-card glass">
+            <div key={i} className="event-card glass" style={{ cursor: "pointer", transition: "transform 0.2s" }} onClick={() => window.location.href = `/events?event=${e.id}`}>
               <span className="event-icon">{e.icon}</span>
               <h3>{e.title}</h3>
               <div className="event-dates">{e.dates}</div>

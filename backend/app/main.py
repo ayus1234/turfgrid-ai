@@ -221,38 +221,43 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
         msg_lower = message.lower()
         tool_context = ""
 
-        if any(w in msg_lower for w in ["match", "schedule", "game", "play", "fixture"]):
+        if any(w in msg_lower for w in ["match", "schedule", "game", "play", "fixture", "vs", "ticket", "book"]):
+            team_query = ""
+            for t in ["india", "pakistan", "england", "australia", "usa", "mexico", "brazil", "south africa"]:
+                if t in msg_lower:
+                    team_query = t
+                    break
+                    
             if "icc" in msg_lower or "cricket" in msg_lower or "t20" in msg_lower:
-                result = search_matches(event_id="icc_wt20_2026")
+                result = search_matches(event_id="icc_wt20_2026", team=team_query)
             elif "fifa" in msg_lower or "football" in msg_lower or "soccer" in msg_lower or "world cup" in msg_lower:
-                result = search_matches(event_id="fifa_wc_2026")
+                result = search_matches(event_id="fifa_wc_2026", team=team_query)
             else:
-                result = search_matches()
+                result = search_matches(team=team_query)
             tool_context = f"\n\nRELEVANT MATCH DATA:\n{json.dumps(result, indent=2, default=str)}"
 
         if any(w in msg_lower for w in ["venue", "stadium", "ground", "where"]):
             if "icc" in msg_lower or "cricket" in msg_lower:
-                result = list_venues(event_id="icc_wt20_2026")
+                result_v = list_venues(event_id="icc_wt20_2026")
             elif "fifa" in msg_lower or "football" in msg_lower:
-                result = list_venues(event_id="fifa_wc_2026")
+                result_v = list_venues(event_id="fifa_wc_2026")
             else:
-                result = list_venues()
-            tool_context += f"\n\nVENUE DATA:\n{json.dumps(result, indent=2, default=str)}"
+                result_v = list_venues()
+            tool_context += f"\n\nVENUE DATA:\n{json.dumps(result_v, indent=2, default=str)}"
 
         if any(w in msg_lower for w in ["crowd", "congestion", "busy", "queue", "arrive"]):
-            result = get_crowd_forecast()
-            tool_context += f"\n\nCROWD DATA:\n{json.dumps(result, indent=2, default=str)}"
+            result_c = get_crowd_forecast()
+            tool_context += f"\n\nCROWD DATA:\n{json.dumps(result_c, indent=2, default=str)}"
 
         if any(w in msg_lower for w in ["business", "restaurant", "prepare", "staff", "demand"]):
             for vid in ["lords", "metlife_stadium", "edgbaston"]:
-                result = predict_match_day_demand(venue_id=vid)
-                if result.get("predictions"):
-                    tool_context += f"\n\nBUSINESS DATA ({vid}):\n{json.dumps(result, indent=2, default=str)}"
+                result_b = predict_match_day_demand(venue_id=vid)
+                if result_b.get("predictions"):
+                    tool_context += f"\n\nBUSINESS DATA ({vid}):\n{json.dumps(result_b, indent=2, default=str)}"
                     break
 
         # Dynamic City Extraction for all ICC and FIFA venues
         detected_iata = "JFK" # Default
-        detected_city = "NYC" # Default
         
         city_mappings = {
             "LHR": ["london", "lord's", "lords", "oval", "uk", "england"],
@@ -262,24 +267,36 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
             "LAX": ["los angeles", "la", "inglewood", "sofi"],
             "MEX": ["mexico", "azteca", "mexico city"]
         }
-        
-        hotel_mappings = {"LHR": "LON", "BHX": "BHX", "MAN": "MAN", "JFK": "NYC", "LAX": "LAX", "MEX": "MEX"}
-        
+
         for iata, keywords in city_mappings.items():
             if any(k in msg_lower for k in keywords):
                 detected_iata = iata
-                detected_city = hotel_mappings[iata]
                 break
 
+        detected_venue = {"LHR": "lords", "BHX": "edgbaston", "MAN": "old_trafford", "JFK": "metlife_stadium", "LAX": "sofi_stadium", "MEX": "estadio_azteca"}.get(detected_iata, "metlife_stadium")
+
         if any(w in msg_lower for w in ["flight", "fly", "airplane"]):
-            from app.tools.fan_tools import search_live_flights
-            result = search_live_flights(origin_iata="ANY", destination_iata=detected_iata, departure_date="2026-06-15")
-            tool_context += f"\n\nLIVE FLIGHT DATA (To {detected_iata}):\n{json.dumps(result, indent=2, default=str)}"
+            from app.tools.booking_tools import search_flights
+            result_f = search_flights(source_city="Delhi", venue_id=detected_venue, departure_date="2026-06-15")
+            tool_context += f"\n\nLIVE FLIGHT DATA:\n{json.dumps(result_f, indent=2, default=str)}\nIMPORTANT: Provide booking_url for flights exactly as a markdown link: [Book Flight](booking_url)."
 
         if any(w in msg_lower for w in ["hotel", "stay", "accommodation"]):
-            from app.tools.fan_tools import search_live_hotels
-            result = search_live_hotels(city_code=detected_city, check_in_date="2026-06-15", check_out_date="2026-06-20")
-            tool_context += f"\n\nLIVE HOTEL DATA ({detected_city}):\n{json.dumps(result, indent=2, default=str)}"
+            from app.tools.booking_tools import search_nearby_hotels
+            result_h = search_nearby_hotels(venue_id=detected_venue)
+            tool_context += f"\n\nLIVE HOTEL DATA ({detected_venue}):\n{json.dumps(result_h, indent=2, default=str)}\nIMPORTANT: Provide booking_url for hotels exactly as a markdown link: [Book Hotel](booking_url)."
+
+        if any(w in msg_lower for w in ["book", "ticket", "booking"]):
+            from app.tools.booking_tools import _TICKET_URLS, get_ticket_booking_url
+            
+            # If we know the match from RELEVANT MATCH DATA, get that exact ticket URL
+            exact_ticket = None
+            if "RELEVANT MATCH DATA" in tool_context and result.get("matches"):
+                exact_ticket = get_ticket_booking_url(result["matches"][0]["match_id"])
+            
+            if exact_ticket and "error" not in exact_ticket:
+                tool_context += f"\n\nTICKET BOOKING URL:\n{json.dumps(exact_ticket, indent=2, default=str)}\nIMPORTANT: Provide the ticket_url exactly as a markdown link: [Book Tickets]({exact_ticket['ticket_url']})."
+            else:
+                tool_context += f"\n\nTICKET BOOKING URLS:\n- FIFA WC 2026: {_TICKET_URLS['fifa_wc_2026']}\n- ICC WT20 2026: {_TICKET_URLS['icc_wt20_2026']}\nIMPORTANT: Match the correct event based on the teams (e.g. India/Pakistan means ICC) and provide the ticket URL exactly as a markdown link: [Book Tickets](url)."
 
         full_prompt = system_prompt + tool_context + f"\n\nUser query: {message}"
 
@@ -404,6 +421,7 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
 
                     # Handle Groq tool calls!
                     if response_message.tool_calls:
+                        groq_messages.append(response_message)
                         for tool_call in response_message.tool_calls:
                             func_name = tool_call.function.name
                             args = json.loads(tool_call.function.arguments)
@@ -424,16 +442,36 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                                         "A new fan itinerary was just saved. Automatically generate a staffing plan for a cafe near the venue. Assume normal staff is 4.", 
                                         "system_workflow_bot"
                                     ))
+                                else:
+                                    result = {"status": "error", "message": "Unknown function"}
                                 
+                                groq_messages.append({
+                                    "tool_call_id": tool_call.id,
+                                    "role": "tool",
+                                    "name": func_name,
+                                    "content": json.dumps(result)
+                                })
+
                                 if result and result.get("status") == "error":
                                     agent_steps.append({"agent": "GroqFallback", "action": f"Tool error: {result.get('message')}", "status": "warning"})
-                                    final_response_text += f"\n\n🚨 *Could not execute {func_name}: {result.get('message')}*"
                                 else:
                                     agent_steps.append({"agent": "GroqFallback", "action": "MongoDB Write Successful", "status": "done"})
-                                    final_response_text += f"\n\n🚨 *{func_name} was successfully executed by the backup AI! Dashboard updated.*"
                             except Exception as tool_err:
                                 agent_steps.append({"agent": "GroqFallback", "action": f"Tool failed: {str(tool_err)}", "status": "warning"})
-                                final_response_text += f"\n\n🚨 *Tool {func_name} failed unexpectedly.*"
+                                groq_messages.append({
+                                    "tool_call_id": tool_call.id,
+                                    "role": "tool",
+                                    "name": func_name,
+                                    "content": json.dumps({"status": "error", "message": str(tool_err)})
+                                })
+                        
+                        # Call Groq again to get the final conversational response
+                        final_chat_completion = groq_client.chat.completions.create(
+                            messages=groq_messages,
+                            model="llama-3.3-70b-versatile",
+                            temperature=0.7,
+                        )
+                        final_response_text = final_chat_completion.choices[0].message.content
 
                     agent_steps.append({"agent": "TurfGridAI", "action": "Response generated via Groq", "status": "done"})
 
@@ -630,6 +668,45 @@ async def api_get_distance(origin: str, venue_id: str):
     return calculate_live_travel_time(origin=origin, venue_id=venue_id)
 
 
+# ─── Booking Routes ──────────────────────────────────────────────────────────
+
+@app.get("/api/booking/tickets/{match_id}")
+async def booking_tickets(match_id: str):
+    """Get official ticket booking URL for a match."""
+    from app.tools.booking_tools import get_ticket_booking_url
+    return get_ticket_booking_url(match_id)
+
+
+@app.get("/api/booking/hotels/{venue_id}")
+async def booking_hotels(venue_id: str):
+    """Get nearby hotels for a venue."""
+    from app.tools.booking_tools import search_nearby_hotels
+    return search_nearby_hotels(venue_id)
+
+
+class FlightSearchRequest(BaseModel):
+    source: str
+    venue_id: str
+    departure_date: str = "2026-06-15"
+
+
+@app.post("/api/booking/flights")
+async def booking_flights(request: FlightSearchRequest):
+    """Search flights to a venue's nearest airport."""
+    from app.tools.booking_tools import search_flights
+    return search_flights(request.source, request.venue_id, request.departure_date)
+
+
+@app.get("/api/matches/{match_id}")
+async def get_single_match(match_id: str):
+    """Get detailed info for a single match."""
+    from app.tools.booking_tools import get_match_detail
+    result = get_match_detail(match_id)
+    if "error" in result:
+        return JSONResponse(status_code=404, content=result)
+    return result
+
+
 # ─── v2.0: State-Altering Data Routes ────────────────────────────────────────
 
 @app.get("/api/itineraries")
@@ -685,11 +762,19 @@ async def get_analytics(city: str = None):
     if db is None:
         return {"error": "MongoDB not connected"}
     try:
-        match_stage = {"$match": {"city": city}} if city and city != "Global" else {"$match": {}}
+        # We build specific match stages for each collection to handle documents
+        # that might be missing the new 'city' field.
+        if city and city != "Global":
+            regex_query = {"$regex": city, "$options": "i"}
+            alerts_match = {"$match": {"$or": [{"city": regex_query}, {"venue_name": regex_query}]}}
+            staff_match = {"$match": {"$or": [{"city": regex_query}, {"venue_name": regex_query}]}}
+            itin_match = {"$match": {"$or": [{"city": regex_query}, {"destination_city": regex_query}]}}
+        else:
+            alerts_match = staff_match = itin_match = {"$match": {}}
         
         # 1. Alert Frequency per Venue
         alerts_pipeline = [
-            match_stage,
+            alerts_match,
             {"$group": {"_id": "$venue_name", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}}
         ]
@@ -698,7 +783,7 @@ async def get_analytics(city: str = None):
         
         # 2. Staffing Impact
         staffing_pipeline = [
-            match_stage,
+            staff_match,
             {"$group": {
                 "_id": "$business_type", 
                 "total_extra_staff": {"$sum": "$additional_staff_needed"},
@@ -711,7 +796,7 @@ async def get_analytics(city: str = None):
         
         # 3. Popular Itinerary Destinations
         itinerary_pipeline = [
-            match_stage,
+            itin_match,
             {"$group": {"_id": "$destination_city", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}}
         ]

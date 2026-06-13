@@ -33,8 +33,10 @@ def search_matches(event_id: str = "", team: str = "", venue_id: str = "") -> di
         match = True
         if event_id and m["event_id"] != event_id:
             match = False
-        if team and team.lower() not in [t.lower() for t in m.get("teams", [])]:
-            match = False
+        if team:
+            team_lower = team.lower()
+            if not any(team_lower in t.lower() for t in m.get("teams", [])):
+                match = False
         if venue_id and m.get("venue_id") != venue_id:
             match = False
         if match:

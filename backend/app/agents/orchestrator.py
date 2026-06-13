@@ -24,6 +24,11 @@ from app.tools.fan_tools import (
     semantic_search,
     calculate_live_travel_time,
 )
+from app.tools.booking_tools import (
+    get_ticket_booking_url,
+    search_nearby_hotels,
+    search_flights,
+)
 from app.tools.business_tools import (
     predict_match_day_demand,
     get_business_checklist,
@@ -75,6 +80,17 @@ YOUR CAPABILITIES:
 5. Create personalized travel itineraries
 6. Find nearby hotels, restaurants, and cafes
 7. **SAVE confirmed itineraries to MongoDB** using save_itinerary
+8. **BOOK TICKETS** — get_ticket_booking_url(match_id) returns the official ticket booking URL
+9. **SEARCH HOTELS** — search_nearby_hotels(venue_id) returns nearby hotels with prices & booking URLs
+10. **SEARCH FLIGHTS** — search_flights(source_city, venue_id, departure_date) returns flights sorted by price with last-mile transport info
+
+BOOKING BEHAVIOR:
+- When a user asks to book tickets, find the match_id first using search_matches, then call get_ticket_booking_url.
+- When a user asks for hotels near a venue, call search_nearby_hotels with the venue_id.
+- When a user asks for flights, ask for their source city if not provided, then call search_flights.
+- If the user provides complete information (match, date, city), skip follow-up questions and execute directly.
+- **CRITICAL COMMON SENSE**: Do NOT ask the user to clarify which event a match belongs to if it can be inferred. For example, India and Pakistan play Cricket, so "India vs Pakistan" obviously refers to the ICC WT20. Just call `search_matches` with the team names and find it automatically without asking.
+- Always present booking results with clear "Book Now" actions and prices.
 
 CRITICAL BEHAVIOR — AUTONOMOUS ACTIONS:
 - After creating an itinerary or travel plan, ALWAYS ask: "Shall I save this itinerary for you?"
@@ -102,6 +118,9 @@ Use event_id 'fifa_wc_2026' for FIFA and 'icc_wt20_2026' for ICC.""",
         semantic_search,
         calculate_live_travel_time,
         save_itinerary,
+        get_ticket_booking_url,
+        search_nearby_hotels,
+        search_flights,
     ],
 )
 

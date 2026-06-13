@@ -70,26 +70,26 @@ VENUES = [
 ]
 
 MATCHES = [
-    # FIFA World Cup 2026 - Key Matches
-    {"_id": "fifa_opening", "event_id": "fifa_wc_2026", "round": "Group Stage - Opening Match", "date": "2026-06-11T18:00:00Z", "venue_id": "estadio_azteca", "teams": ["Mexico", "TBD"], "expected_attendance": 87000, "significance": "Opening Ceremony & Match"},
-    {"_id": "fifa_usa_opener", "event_id": "fifa_wc_2026", "round": "Group Stage", "date": "2026-06-12T21:00:00Z", "venue_id": "sofi_stadium", "teams": ["United States", "TBD"], "expected_attendance": 70000, "significance": "USA's first home World Cup match since 1994"},
-    {"_id": "fifa_brazil_arg", "event_id": "fifa_wc_2026", "round": "Group Stage", "date": "2026-06-18T18:00:00Z", "venue_id": "hard_rock_stadium", "teams": ["Brazil", "Argentina"], "expected_attendance": 64000, "significance": "South American classic rivalry"},
-    {"_id": "fifa_eng_fra", "event_id": "fifa_wc_2026", "round": "Group Stage", "date": "2026-06-20T21:00:00Z", "venue_id": "metlife_stadium", "teams": ["England", "France"], "expected_attendance": 82000, "significance": "European heavyweight clash"},
-    {"_id": "fifa_ind_group", "event_id": "fifa_wc_2026", "round": "Group Stage", "date": "2026-06-15T15:00:00Z", "venue_id": "mercedes_benz_stadium", "teams": ["India", "TBD"], "expected_attendance": 71000, "significance": "India's historic first World Cup match"},
-    {"_id": "fifa_r16_1", "event_id": "fifa_wc_2026", "round": "Round of 16", "date": "2026-06-28T18:00:00Z", "venue_id": "att_stadium", "teams": ["TBD", "TBD"], "expected_attendance": 80000, "significance": "Knockout stage begins"},
-    {"_id": "fifa_qf_1", "event_id": "fifa_wc_2026", "round": "Quarter-Final", "date": "2026-07-04T21:00:00Z", "venue_id": "sofi_stadium", "teams": ["TBD", "TBD"], "expected_attendance": 70000, "significance": "Quarter-Final on July 4th"},
-    {"_id": "fifa_sf_1", "event_id": "fifa_wc_2026", "round": "Semi-Final", "date": "2026-07-14T21:00:00Z", "venue_id": "metlife_stadium", "teams": ["TBD", "TBD"], "expected_attendance": 82500, "significance": "Semi-Final 1"},
-    {"_id": "fifa_sf_2", "event_id": "fifa_wc_2026", "round": "Semi-Final", "date": "2026-07-15T21:00:00Z", "venue_id": "att_stadium", "teams": ["TBD", "TBD"], "expected_attendance": 80000, "significance": "Semi-Final 2"},
-    {"_id": "fifa_final", "event_id": "fifa_wc_2026", "round": "Final", "date": "2026-07-19T20:00:00Z", "venue_id": "metlife_stadium", "teams": ["TBD", "TBD"], "expected_attendance": 82500, "significance": "FIFA World Cup 2026 Final"},
-    # ICC Women's T20 World Cup 2026 - Key Matches
-    {"_id": "icc_opening", "event_id": "icc_wt20_2026", "round": "Group Stage - Opening Match", "date": "2026-06-12T14:00:00Z", "venue_id": "edgbaston", "teams": ["England", "South Africa"], "expected_attendance": 25000, "significance": "Opening Ceremony & Match"},
-    {"_id": "icc_ind_eng", "event_id": "icc_wt20_2026", "round": "Group Stage", "date": "2026-06-15T14:00:00Z", "venue_id": "lords", "teams": ["India", "England"], "expected_attendance": 30000, "significance": "Marquee group match — India vs hosts England"},
-    {"_id": "icc_aus_nz", "event_id": "icc_wt20_2026", "round": "Group Stage", "date": "2026-06-16T10:30:00Z", "venue_id": "old_trafford", "teams": ["Australia", "New Zealand"], "expected_attendance": 22000, "significance": "Trans-Tasman rivalry"},
-    {"_id": "icc_ind_pak", "event_id": "icc_wt20_2026", "round": "Group Stage", "date": "2026-06-20T14:00:00Z", "venue_id": "the_oval", "teams": ["India", "Pakistan"], "expected_attendance": 25500, "significance": "Most-watched women's cricket match"},
-    {"_id": "icc_ind_aus", "event_id": "icc_wt20_2026", "round": "Super Six", "date": "2026-06-25T14:00:00Z", "venue_id": "edgbaston", "teams": ["India", "Australia"], "expected_attendance": 25000, "significance": "India vs reigning champions"},
-    {"_id": "icc_sf_1", "event_id": "icc_wt20_2026", "round": "Semi-Final 1", "date": "2026-07-01T14:00:00Z", "venue_id": "the_oval", "teams": ["TBD", "TBD"], "expected_attendance": 25500, "significance": "Semi-Final 1"},
-    {"_id": "icc_sf_2", "event_id": "icc_wt20_2026", "round": "Semi-Final 2", "date": "2026-07-02T14:00:00Z", "venue_id": "the_oval", "teams": ["TBD", "TBD"], "expected_attendance": 25500, "significance": "Semi-Final 2"},
-    {"_id": "icc_final", "event_id": "icc_wt20_2026", "round": "Final", "date": "2026-07-05T14:00:00Z", "venue_id": "lords", "teams": ["TBD", "TBD"], "expected_attendance": 30000, "significance": "ICC Women's T20 World Cup 2026 Final at the Home of Cricket"},
+    # FIFA World Cup 2026 - Key Matches from Schedule
+    {"_id": "fifa_mex_rsa", "event_id": "fifa_wc_2026", "round": "Group A", "date": "2026-06-11T18:00:00Z", "venue_id": "estadio_azteca", "teams": ["Mexico", "South Africa"], "expected_attendance": 87000, "significance": "Opening Match"},
+    {"_id": "fifa_usa_par", "event_id": "fifa_wc_2026", "round": "Group D", "date": "2026-06-12T21:00:00Z", "venue_id": "sofi_stadium", "teams": ["USA", "Paraguay"], "expected_attendance": 70000, "significance": "USA Opener"},
+    {"_id": "fifa_bra_mor", "event_id": "fifa_wc_2026", "round": "Group C", "date": "2026-06-13T15:00:00Z", "venue_id": "hard_rock_stadium", "teams": ["Brazil", "Morocco"], "expected_attendance": 64000, "significance": "Group C Clash"},
+    {"_id": "fifa_eng_cro", "event_id": "fifa_wc_2026", "round": "Group L", "date": "2026-06-18T21:00:00Z", "venue_id": "metlife_stadium", "teams": ["England", "Croatia"], "expected_attendance": 82000, "significance": "European Heavyweights"},
+    {"_id": "fifa_arg_alg", "event_id": "fifa_wc_2026", "round": "Group J", "date": "2026-06-17T18:00:00Z", "venue_id": "mercedes_benz_stadium", "teams": ["Argentina", "Algeria"], "expected_attendance": 71000, "significance": "Group J Match"},
+    {"_id": "fifa_fra_sen", "event_id": "fifa_wc_2026", "round": "Group I", "date": "2026-06-17T21:00:00Z", "venue_id": "att_stadium", "teams": ["France", "Senegal"], "expected_attendance": 80000, "significance": "Group I Match"},
+    {"_id": "fifa_r16_1", "event_id": "fifa_wc_2026", "round": "Round of 16", "date": "2026-07-04T22:30:00Z", "venue_id": "att_stadium", "teams": ["TBD", "TBD"], "expected_attendance": 80000, "significance": "Knockout stage begins"},
+    {"_id": "fifa_final", "event_id": "fifa_wc_2026", "round": "Final", "date": "2026-07-20T00:30:00Z", "venue_id": "metlife_stadium", "teams": ["TBD", "TBD"], "expected_attendance": 82500, "significance": "FIFA World Cup 2026 Final"},
+    
+    # ICC Women's T20 World Cup 2026 - Key Matches from Schedule
+    {"_id": "icc_eng_sri", "event_id": "icc_wt20_2026", "round": "Group B", "date": "2026-06-12T14:00:00Z", "venue_id": "edgbaston", "teams": ["England Women", "Sri Lanka Women"], "expected_attendance": 25000, "significance": "Opening Match"},
+    {"_id": "icc_aus_rsa", "event_id": "icc_wt20_2026", "round": "Group A", "date": "2026-06-13T13:30:00Z", "venue_id": "old_trafford", "teams": ["Australia Women", "South Africa Women"], "expected_attendance": 26000, "significance": "Group A Clash"},
+    {"_id": "icc_ind_pak", "event_id": "icc_wt20_2026", "round": "Group A", "date": "2026-06-14T13:30:00Z", "venue_id": "edgbaston", "teams": ["India Women", "Pakistan Women"], "expected_attendance": 25000, "significance": "Marquee Rivalry"},
+    {"_id": "icc_ind_ned", "event_id": "icc_wt20_2026", "round": "Group A", "date": "2026-06-17T13:30:00Z", "venue_id": "headingley", "teams": ["India Women", "Netherlands Women"], "expected_attendance": 18350, "significance": "Group A Match"},
+    {"_id": "icc_rsa_ind", "event_id": "icc_wt20_2026", "round": "Group A", "date": "2026-06-21T13:30:00Z", "venue_id": "old_trafford", "teams": ["South Africa Women", "India Women"], "expected_attendance": 26000, "significance": "Crucial Group Match"},
+    {"_id": "icc_ind_ban", "event_id": "icc_wt20_2026", "round": "Group A", "date": "2026-06-25T13:30:00Z", "venue_id": "old_trafford", "teams": ["India Women", "Bangladesh Women"], "expected_attendance": 26000, "significance": "Subcontinent Clash"},
+    {"_id": "icc_aus_ind", "event_id": "icc_wt20_2026", "round": "Group A", "date": "2026-06-28T13:30:00Z", "venue_id": "lords", "teams": ["Australia Women", "India Women"], "expected_attendance": 30000, "significance": "Blockbuster Match"},
+    {"_id": "icc_sf_1", "event_id": "icc_wt20_2026", "round": "1st Semi-Final", "date": "2026-06-30T13:30:00Z", "venue_id": "the_oval", "teams": ["TBD", "TBD"], "expected_attendance": 25500, "significance": "Semi-Final 1"},
+    {"_id": "icc_final", "event_id": "icc_wt20_2026", "round": "Final", "date": "2026-07-05T13:30:00Z", "venue_id": "lords", "teams": ["TBD", "TBD"], "expected_attendance": 30000, "significance": "ICC Women's T20 World Cup 2026 Final"},
 ]
 
 BUSINESSES = [

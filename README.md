@@ -57,9 +57,15 @@ Every agent action is tracked and displayed in the chat UI with a visual orchest
 We recently transformed the project into a true startup-grade application:
 - **Multi-Tenant City Dashboards:** The dashboard now supports filtering by city, allowing parallel management of New York, London, Los Angeles, etc.
 - **Real Notifications System:** Critical operational alerts now trigger background asynchronous tasks that dispatch simulated SMS, Email, and Webhook notifications.
-- **Historical Analytics (/analytics):** A dedicated analytics portal powered by pure MongoDB `$group` and `$sum` aggregation pipelines to visualize alert frequencies, staffing impact, and fan destinations.
 - **Agent-to-Agent Workflows:** True multi-agent collaboration! When the Fan Agent saves an itinerary, the backend automatically spins up the Business Readiness Agent in the background to autonomously generate a staffing plan for the venue, anticipating demand without user input.
 - **Database-Level Agent Guardrails:** To prevent agents from spamming duplicate alerts, MongoDB actively enforces state using a **Unique Compound Index** on `[venue_name, alert_type]` and a **TTL (Time-To-Live) Index** on `expires_at`. The database will outright reject duplicate active alerts of the same type and handle expiration automatically.
+
+### 8. 💎 v4.0 Final Polish & Production Readiness
+The final milestone focused on extreme reliability and high-fidelity UX:
+- **Interactive Analytics Dashboard:** Upgraded historical analytics to use premium, dynamic `recharts` Pie and Donut visualizations with blurred glassmorphism tooltips. Fully supported by robust MongoDB `$or` and `$regex` queries to securely filter cross-tenant data.
+- **Complete Booking Suite:** The platform now deep-links directly to official FIFA and ICC ticket portals, alongside fully integrated live Kayak and Booking.com URL generation for autonomous travel planning.
+- **Advanced Groq Failover Loop:** The high-availability Llama-3 backup agent no longer just executes tools blindly; it properly completes the multi-turn function-calling loop by injecting tool results back into the conversation context to provide a seamless, natural response identical to Gemini.
+- **Intelligent Context Routing:** Agents exhibit "common sense" (e.g. knowing "India vs Pakistan" strictly means ICC Women's T20 and automatically bypassing redundant clarification questions) via optimized system prompts and dynamic keyword extraction.
 
 ---
 
@@ -77,22 +83,24 @@ We recently transformed the project into a true startup-grade application:
  │   │   │   ├── 📄 business_tools.py  # Demand forecasts, checklists
  │   │   │   ├── 📄 crowd_tools.py     # Crowd forecasts, weather, congestion
  │   │   │   ├── 📄 operations_tools.py # Incidents, volunteers, resources
- │   │   │   ├── 📄 action_tools.py    # [NEW] State-altering: save_itinerary, create_staffing_plan, issue_alert
- │   │   │   └── 📄 memory_tools.py    # [NEW] Persistent user memory: save/get preferences
- │   │   ├── 📂 services/         # [v3.0] Background services
+ │   │   │   ├── 📄 action_tools.py    # State-altering: save_itinerary, create_staffing_plan, issue_alert
+ │   │   │   ├── 📄 memory_tools.py    # Persistent user memory: save/get preferences
+ │   │   │   └── 📄 booking_tools.py   # [v4.0] Official ticketing, live flights (Kayak), and hotels
+ │   │   ├── 📂 services/         # Background services
  │   │   │   └── 📄 notification_service.py # Event-driven SMS/Email/Webhooks
  │   │   ├── 📄 config.py        # Environment & Configuration settings
- │   │   └── 📄 main.py          # API Routes + v3.0 state endpoints & workflows
+ │   │   └── 📄 main.py          # API Routes + v4.0 state endpoints & workflows
  │   ├── 📄 requirements.txt     # Python Dependencies
  │   ├── 📄 run_seed.py          # MongoDB Database Seeding Script
+ │   ├── 📄 backfill_db.py       # [v4.0] MongoDB Migration Script for City Data
  │   └── 📄 run.py               # Uvicorn Development Server Runner
  │
  ├── 📂 frontend/                # Next.js React Frontend
  │   ├── 📂 src/
  │   │   ├── 📂 app/             # Next.js App Router structure
- │   │   │   ├── 📂 analytics/   # [v3.0] Historical MongoDB Aggregation Dashboard
- │   │   │   ├── 📂 chat/        # Agent Chat + Multi-Agent Transparency Panel
- │   │   │   ├── 📂 dashboard/   # [v3.0] Multi-Tenant Operations Command Center
+ │   │   │   ├── 📂 analytics/   # Historical MongoDB Aggregation Dashboard (Recharts Pie/Donut)
+ │   │   │   ├── 📂 chat/        # Agent Chat + Markdown Link Parsing & Failover UI
+ │   │   │   ├── 📂 dashboard/   # Multi-Tenant Operations Command Center
  │   │   │   ├── 📂 events/      # Venue Explorer & Interactive Modals
  │   │   │   ├── 📄 globals.css  # Core styles, glassmorphism, agent steps animations
  │   │   │   ├── 📄 layout.js    # Root layout, Navbar, and Footer
@@ -118,7 +126,7 @@ graph TD
         O[TurfGrid Orchestrator]
         O -->|Primary: Success| G["Google Gemini 2.5 Flash"]
         O -->|Primary: 429 Quota Exhausted| F[Failover Trigger]
-        F -->|Fallback| L["Groq Llama-3.3-70b-versatile"]
+        F -->|Fallback + Tool Sync| L["Groq Llama-3.3-70b-versatile"]
     end
 
     %% User Memory
@@ -146,7 +154,7 @@ graph TD
     DB_ALT -.->|Dispatch| NOTIFY[["Notification Service<br/>(SMS, Email, Webhooks)"]]
 
     %% External APIs & Tools
-    FL -->|Simulated Data| T1(("Amadeus Travel APIs"))
+    FL -->|Live Booking Links| T1(("Kayak / Booking.com / FIFA / ICC Tickets"))
     CI -->|Live Traffic| T2(("Google Maps Distance Matrix"))
     CI -->|Live Atmospheric| T3(("OpenWeatherMap API"))
 
@@ -159,7 +167,7 @@ graph TD
     DASH -->|Polls every 30s| DB_ALT
     
     %% Analytics
-    ANALYTICS["Analytics Dashboard<br/>Next.js"] -->|MongoDB Aggregation| DB_ITN
+    ANALYTICS["Analytics Dashboard<br/>Recharts UI"] -->|MongoDB `$or` & `$regex` Aggregation| DB_ITN
     ANALYTICS -->|MongoDB Aggregation| DB_STP
     ANALYTICS -->|MongoDB Aggregation| DB_ALT
     

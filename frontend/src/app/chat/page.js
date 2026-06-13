@@ -7,9 +7,11 @@ const SUGGESTIONS = [
   "🏏 Plan a trip to see India play at Lord's",
   "⚽ What matches are at MetLife Stadium?",
   "📊 How crowded will the FIFA Final be?",
+  "🎫 Book tickets for India vs Pakistan",
+  "🏨 Find hotels near Lord's Cricket Ground",
+  "✈️ Book flights from Delhi to London for the ICC Final",
   "🍽️ I own a restaurant near The Oval. Big match tomorrow!",
   "🛡️ Volunteer schedule for Edgbaston",
-  "✈️ Travel from Ranchi to England for the Women's T20 World Cup",
 ];
 
 export default function ChatPage() {
@@ -78,6 +80,7 @@ export default function ChatPage() {
     // Simple markdown-like formatting
     return text
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\[(.*?)\]\((.*?)\)/g, "<a href='$2' target='_blank' rel='noopener noreferrer' style='color: var(--accent-blue); text-decoration: underline; word-break: break-all;'>$1</a>")
       .replace(/\n/g, "<br/>")
       .replace(/- /g, "• ");
   };
@@ -104,6 +107,12 @@ export default function ChatPage() {
                 <br />
                 <br />
                 I don't just recommend — I <strong>execute actions</strong>:
+                <br />• 🎫 <strong>Book match tickets</strong> — redirect to
+                official FIFA & ICC ticket portals
+                <br />• 🏨 <strong>Find & book hotels</strong> — nearby
+                accommodation with prices & booking links
+                <br />• ✈️ <strong>Search flights</strong> — find the best
+                flights with last-mile transport info
                 <br />• ✈️ <strong>Save travel itineraries</strong> — plan and
                 persist your trip to MongoDB
                 <br />• 📊 <strong>Create staffing plans</strong> — generate
