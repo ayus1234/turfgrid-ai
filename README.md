@@ -25,6 +25,13 @@
 <br/>
 
 <div align="center">
+  <img src="assets/chat.png?v=2" alt="Agent Chat and LLM Failover" width="800"/>
+  <p><em>Multi-Agent Chat UI demonstrating High-Availability Gemini to Groq Failover and Background Workflow Toasts</em></p>
+</div>
+
+<br/>
+
+<div align="center">
   <img src="assets/venues.png" alt="Venues Directory" width="800"/>
   <p><em>Comprehensive Global Venues Directory with Transport Links</em></p>
 </div>
@@ -39,22 +46,8 @@
 <br/>
 
 <div align="center">
-  <img src="assets/dashboard.png" alt="Operations Dashboard" width="800"/>
-  <p><em>Real-Time Operations Dashboard with City Filtering</em></p>
-</div>
-
-<br/>
-
-<div align="center">
-  <img src="assets/alerts.png" alt="Live Operational Alerts" width="800"/>
-  <p><em>Live Operational Alerts & Incident Response Management</em></p>
-</div>
-
-<br/>
-
-<div align="center">
-  <img src="assets/chat.png?v=2" alt="Agent Chat and LLM Failover" width="800"/>
-  <p><em>Multi-Agent Chat UI demonstrating High-Availability Gemini to Groq Failover and Background Workflow Toasts</em></p>
+  <img src="assets/weather.png" alt="Live Weather" width="800"/>
+  <p><em>Live Venue Weather Integration via OpenWeatherMap API</em></p>
 </div>
 
 <br/>
@@ -81,20 +74,6 @@
 <br/>
 
 <div align="center">
-  <img src="assets/weather.png" alt="Live Weather" width="800"/>
-  <p><em>Live Venue Weather Integration via OpenWeatherMap API</em></p>
-</div>
-
-<br/>
-
-<div align="center">
-  <img src="assets/analytics.png" alt="Historical Analytics" width="800"/>
-  <p><em>Historical Analytics powered by complex MongoDB Aggregation Pipelines</em></p>
-</div>
-
-<br/>
-
-<div align="center">
   <img src="assets/distance.png" alt="Distance Calculation" width="800"/>
   <p><em>Live Distance Matrix Calculation routing fans directly to the venues</em></p>
 </div>
@@ -102,8 +81,29 @@
 <br/>
 
 <div align="center">
+  <img src="assets/dashboard.png" alt="Operations Dashboard" width="800"/>
+  <p><em>Real-Time Operations Dashboard with City Filtering</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/alerts.png" alt="Live Operational Alerts" width="800"/>
+  <p><em>Live Operational Alerts & Incident Response Management</em></p>
+</div>
+
+<br/>
+
+<div align="center">
   <img src="assets/notifications.png" alt="Real-Time Notification Logs" width="800"/>
   <p><em>Real-Time Webhook, Email, and SMS Notification Logs</em></p>
+</div>
+
+<br/>
+
+<div align="center">
+  <img src="assets/analytics.png" alt="Historical Analytics" width="800"/>
+  <p><em>Historical Analytics powered by complex MongoDB Aggregation Pipelines</em></p>
 </div>
 
 ---
