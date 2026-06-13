@@ -212,7 +212,10 @@ def calculate_live_travel_time(origin: str, venue_id: str) -> dict:
             
         element = data["rows"][0]["elements"][0]
         if element.get("status") != "OK":
-            return {"error": f"Route calculation failed: {element.get('status')}"}
+            status_code = element.get('status')
+            if status_code == "ZERO_RESULTS":
+                return {"error": "No driving route exists between these locations (they are separated by an ocean)."}
+            return {"error": f"Route calculation failed: {status_code}"}
             
         distance = element["distance"]["text"]
         duration = element["duration"]["text"]
