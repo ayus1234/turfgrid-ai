@@ -331,6 +331,7 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                     groq_client = Groq(api_key=groq_key)
                     
                     from app.tools.action_tools import issue_operational_alert, create_staffing_plan, save_itinerary
+                    from app.tools.fan_tools import semantic_search
 
                     groq_messages = [
                         {"role": "system", "content": system_prompt + tool_context},
@@ -400,6 +401,21 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                                     "required": ["user_name", "event", "origin", "destination_city", "matches"]
                                 }
                             }
+                        },
+                        {
+                            "type": "function",
+                            "function": {
+                                "name": "semantic_search",
+                                "description": "Search for venues or matches using natural language semantic meaning and MongoDB Vector Search.",
+                                "parameters": {
+                                    "type": "object",
+                                    "properties": {
+                                        "query": {"type": "string", "description": "The natural language query (e.g., 'stadiums near water')"},
+                                        "search_type": {"type": "string", "enum": ["venues", "matches"], "description": "Which collection to search."}
+                                    },
+                                    "required": ["query"]
+                                }
+                            }
                         }
                     ]
 
@@ -442,6 +458,8 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
                                         "A new fan itinerary was just saved. Automatically generate a staffing plan for a cafe near the venue. Assume normal staff is 4.", 
                                         "system_workflow_bot"
                                     ))
+                                elif func_name == "semantic_search":
+                                    result = await semantic_search(**args)
                                 else:
                                     result = {"status": "error", "message": "Unknown function"}
                                 
@@ -454,6 +472,8 @@ Be specific with data, enthusiastic about sports, and actionable in your advice.
 
                                 if result and result.get("status") == "error":
                                     agent_steps.append({"agent": "GroqFallback", "action": f"Tool error: {result.get('message')}", "status": "warning"})
+                                elif func_name == "semantic_search":
+                                    agent_steps.append({"agent": "GroqFallback", "action": "MongoDB Vector Search Successful", "status": "done"})
                                 else:
                                     agent_steps.append({"agent": "GroqFallback", "action": "MongoDB Write Successful", "status": "done"})
                             except Exception as tool_err:
